@@ -1,0 +1,171 @@
+
+.back{
+  background-image: url(../IMAGES/Blood\ Strains.jpg);
+  background-position: center;
+}
+
+img{
+  width:450px;
+  display: block;
+  margin: 0 auto;
+}
+   
+.navbar-brand,
+.navbar-nav .nav-link{
+  color: #fff;
+}
+
+.navbar-brand img{  /* For Logo icon at Navbar */
+  height: 38px;
+  width: 38px;   
+  position: relative; 
+  left: 14%;
+}
+
+.navbar-nav{
+  justify-content: center;
+}
+
+.navbar-nav .nav-link{
+  padding: 0.5rem 1rem;
+}
+
+.form-inline{
+  justify-content: center;
+}
+
+.bg-dark{
+  background-color: #c9c9c9!important;
+}
+
+.home-link:hover{
+  color: red;
+}
+
+.data{
+  position: relative;
+  top: 100px;
+}
+
+.data p{
+  position: relative;
+  top: 10px;
+}
+
+.data img{
+  width: 300px;
+  height: 300px;
+  border-radius: 40px;
+}
+
+.search_bro{
+  position: relative;
+  top: 80px;
+}
+
+.search_bro .criminal_name_search{
+  text-align: center;
+} 
+
+.search_bro img{
+  width: 300px;
+  height: 300px;
+  border-radius: 40px;
+}
+
+.f{
+  position: relative; 
+  top: 66px; 
+}
+
+.f img{
+  width: 300px;
+  height: 300px;
+  border-radius: 40px;
+}
+
+.container img{
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+}
+
+.container img:hover{
+  transform: scale(0.9);
+  box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
+}
+ 
+.f .form-control{
+  background-color: #f1e1e1; /* Light grey background */
+  border-color: rgb(255, 228, 228); /* Red border */
+}
+
+.f .form-label{
+  font-weight: bold;  
+}
+ 
+.search_bro{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.search_card{
+  max-width: 300px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out;
+}
+
+.search_card:hover{
+  transform: translateY(-5px);
+}
+
+.search_card img{
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.search_card h4{
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.search_card p{
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+.search_card a{
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out;
+}
+
+.search_card a:hover{
+  color: #f00;
+}
+
+.dropdown-menu.show{
+  display: block;
+  position: absolute;
+  left: -110px;
+  border-color: darkred;
+  border-radius: 15px;
+  opacity: 82%;
+}
+
+.form-group label{
+  font-weight: bold;
+}
+

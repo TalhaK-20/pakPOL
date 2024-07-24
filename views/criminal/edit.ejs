@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pakPOL : Edit a Record</title>
+
+    <link rel="icon" href="/ICONS/police-handcuffs main favicon.png" type="image/x-icon">
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css" />
+
+  </head>
+
+  <body>
+
+    <div class="back">
+
+    <%- include("../partials/navbar.ejs") %>
+
+
+    <div class="container">
+      
+      <h2 style="top: 45px; text-align: center; position: relative;"><u>Edit the Criminal Record of <b><%= foundcriminal.Criminal_Name %></b></u></h2>
+
+      <form class="f" action="/criminal/<%= foundcriminal.id %>?_method=patch" method="post" enctype="multipart/form-data">
+
+
+        <div class="mb-3">
+          <label for="Criminal_Id" class="form-label">Id</label>
+          <input
+            type="number"
+            class="form-control"
+            id="Criminal_Id"
+            name="Criminal_Id"
+            value="<%= foundcriminal.Criminal_Id %>"
+          />
+        </div>
+        
+  
+        <div class="mb-3">
+          <label for="Criminal_Name" class="form-label">Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Name"
+            name="Criminal_Name"
+            value="<%= foundcriminal.Criminal_Name %>"
+          />
+        </div>
+
+  
+        <div class="mb-3">
+          <label for="Criminal_WantedByCountry" class="form-label">Wanted by Country</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_WantedByCountry"
+            name="Criminal_WantedByCountry" required
+            value="<%= foundcriminal.Criminal_WantedByCountry %>"
+          />
+        </div>
+        
+        
+        <div class="mb-3">
+          <label for="Criminal_Crime" class="form-label">Crime</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Crime"
+            name="Criminal_Crime" required
+            value="<%= foundcriminal.Criminal_Crime %>"
+         />
+        </div>
+        
+        
+        <div class="mb-3">
+          <label for="Criminal_CNIC" class="form-label">CNIC</label>
+          <input
+            type="number"
+            class="form-control"
+            id="Criminal_CNIC"
+            name="Criminal_CNIC"
+            value="<%= foundcriminal.Criminal_CNIC %>"
+          />
+        </div>
+        
+  
+        <div class="mb-3">
+          <label for="Criminal_Gender" class="form-label">Gender</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Gender"
+            name="Criminal_Gender"
+            value="<%= foundcriminal.Criminal_Gender %>"
+          />
+        </div>
+        
+  
+        <div class="mb-3">
+          <label for="Criminal_Height" class="form-label">Height (in feet)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Height"
+            name="Criminal_Height"
+            value="<%= foundcriminal.Criminal_Height %>"
+          />
+        </div>
+        
+  
+        <div class="mb-3">
+          <label for="Criminal_Weight" class="form-label">Weight (in kgs)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Weight"
+            name="Criminal_Weight"
+            value="<%= foundcriminal.Criminal_Weight %>"
+          />
+        </div>
+        
+<!-- 
+        <div class="mb-3">
+          <label for="Criminal_Image" class="form-label">Upload Image</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Image"
+            name="Criminal_Image"
+            value="<%= foundcriminal.Criminal_Image %>"
+          />
+        </div> -->
+        
+        
+        <div class="mb-3">
+          <label for="Criminal_Nationality" class="form-label">Nationality</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Nationality"
+            name="Criminal_Nationality"
+            value="<%= foundcriminal.Criminal_Nationality %>"
+          />
+        </div>
+        
+  
+        <div class="mb-3">
+          <label for="Criminal_SpokenLanguages" class="form-label">Spoken Languages</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_SpokenLanguages"
+            name="Criminal_SpokenLanguages"
+            value="<%= foundcriminal.Criminal_SpokenLanguages %>"
+          />
+        </div>
+        
+  
+        <div class="mb-3">
+          <label for="Criminal_StateOfCase" class="form-label">State of Case</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_StateOfCase"
+            name="Criminal_StateOfCase"
+            value="<%= foundcriminal.Criminal_StateOfCase %>"
+          />
+        </div>
+        
+        
+        <div class="mb-3">
+          <label for="Criminal_Published" class="form-label">Published</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Published"
+            name="Criminal_Published"
+            value="<%= foundcriminal.Criminal_Published %>"
+          />
+        </div>
+        
+
+        <img src="<%= foundcriminal.Criminal_Image %>" alt="Previous Image">
+        
+        <p style="text-align: center;"><b>Previous/Old Image</b></p>
+        
+        
+        <div class="mb-3">
+          <label for="Criminal_Image" class="form-label">Upload Image</label>
+          <input
+            type="file"
+            class="form-control"
+            id="Criminal_Image"
+            name="Criminal_Image"
+            value="<%= foundcriminal.Criminal_Image %>"
+          />
+        </div>
+         
+        <button type="submit" class="btn btn-success">Submit</button>
+      
+      </form>
+    
+    </div>
+  
+  </div>
+    
+    <script src="/js/bootstrap.min.js">  // Get the file input element
+      
+      const fileInput = document.getElementById('Criminal_Image');
+  
+      fileInput.value = '<%= foundcriminal.Criminal_Image %>';
+
+    </script>
+    
+    
+    <script src="/js/bootstrap.min.js"></script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     
+  </body>
+</html>

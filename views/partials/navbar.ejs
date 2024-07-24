@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+
+  <a class="navbar-brand" href="/home"><img src="../../ICONS/police-handcuffs main favicon.png" alt="Logo" style="position: relative; left: 2%;  height: 38px; width: 38px;"><p>PakPOL</p></a>
+  
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mx-auto">
+      <li class="nav-item active">
+        <a class="nav-link home-link" href="/home" style="color: rgb(110, 108, 108);"><b>Home</b></a>
+      </li>
+    </ul>
+    
+
+    <div class="dropdown">
+      
+      <button class="btn btn-outline-light dropdown-toggle" type="button" id="searchDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Search
+      </button>
+      
+
+      <div class="dropdown-menu dropdown-menu-lg-right" aria-labelledby="searchDropdown">
+
+        
+        <form class="px-4 py-3" action="/search" method="get">
+          <div class="form-group">
+      
+            <label for="searchName">Search by Name</label>
+            <input type="text" class="form-control" id="searchName" name="searchName" placeholder="Enter a name">
+      
+          </div>
+
+
+          <div class="form-group">
+          
+            <label for="searchId">Search by ID</label>
+            <input type="text" class="form-control" id="searchId" name="searchId" placeholder="Enter an ID">
+          
+          </div>
+
+
+          <div class="form-group">
+          
+            <label for="searchType">Search by Type</label>
+            <input type="text" class="form-control" id="searchType" name="searchType" placeholder="Enter a type">
+          
+          </div>
+
+
+          <div class="form-group">
+          
+            <label for="searchRank">Search by Rank</label>
+            <input type="text" class="form-control" id="searchRank" name="searchRank" placeholder="Enter a rank">
+          
+          </div>
+
+
+          <button type="submit" class="btn btn-primary">Search</button>
+
+        </form>
+
+      </div>
+      
+      <a class="btn btn-outline-light ml-2" href="/logout">Log Out</a>
+    
+    </div>
+  
+  </div>
+
+</nav>

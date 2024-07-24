@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pakPOL | Login Sign-Up</title>
+
+    <link rel="icon" href="/ICONS/police-handcuffs main favicon.png" type="image/x-icon">
+    
+    <link rel="stylesheet" href="/css/home.css">
+
+    <style>
+
+        body{
+            background-image: url(../IMAGES/Blood\ Strains.jpg);
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .password-input{
+            position: relative;
+        }
+
+        .password-toggle{
+            position: absolute;
+            right: 10px;
+            top: 40%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            user-select: none;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>PakPOL</h1>
+    
+        <div id="login-form">
+    
+            <h2>Login</h2>
+    
+            <form action="/login" method="POST" onsubmit="return validateLogin()">
+                
+                <input type="email" placeholder="Email" name="email" required>
+                <div class="password-input">
+                    <input type="password" placeholder="Password" name="password" id="login-password" required>
+                    <span class="password-toggle" onclick="togglePasswordVisibility('login-password')">👁️</span>
+                </div>
+                
+                <input type="password" placeholder="Security Key" name="securityKey" id="login-security-key" required>
+                <button type="submit">Login</button>
+            
+            </form>
+
+
+
+
+            <p>Don't have an account? <a href="#" onclick="toggleForm('signup-form')">Sign-Up</a></p>
+            <p>Forgot your password? <a href="#" onclick="toggleForm('reset-password-form')">Reset Password</a></p>
+
+            <div id="error-message" style="display: none; color: red;"></div>
+
+        </div>
+        
+    
+    
+    
+        <div id="signup-form" style="display: none;">
+    
+            <h2>Sign-Up</h2>
+    
+            <form action="/signup" method="POST" onsubmit="return validateSignup()">
+
+                <input type="text" placeholder="Name" name="name" required>
+                <input type="email" placeholder="Email" name="email" required>
+                
+                <div class="password-input">
+                    <input type="password" placeholder="Password" name="password" id="signup-password" required>
+                    <span class="password-toggle" onclick="togglePasswordVisibility('signup-password')">👁️</span>
+                </div>
+                
+                <input type="password" placeholder="Security Key" name="securityKey" id="login-security-key" required>
+                <button type="submit">Sign-Up</button>
+            
+            </form>
+    
+            <p>Already have an account? <a href="#" onclick="toggleForm('login-form')">Login</a></p>
+
+            <div id="error-message" style="display: none; color: red;"></div>
+    
+        </div>
+        
+    
+
+
+        <div id="reset-password-form" style="display: none;">
+        
+            <h2>Reset Password</h2>
+        
+            <form action="/reset-password" method="POST" onsubmit="return validateResetPassword()">
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="password" placeholder="Security Key" name="securityKey" id="login-security-key" required>
+                <button type="submit">Reset Password</button>
+            </form>
+        
+            <p>Remembered your password? <a href="#" onclick="toggleForm('login-form')">Login</a></p>
+
+            <div id="error-message" style="display: none; color: red;"></div>
+        
+        </div>
+    
+    </div>
+ 
+    <script>
+
+        function toggleForm(formId) {
+            var loginForm = document.getElementById('login-form');
+            var signupForm = document.getElementById('signup-form');
+            var resetPasswordForm = document.getElementById('reset-password-form');
+
+            loginForm.style.display = formId === 'login-form' ? 'block' : 'none';
+            signupForm.style.display = formId === 'signup-form' ? 'block' : 'none';
+            resetPasswordForm.style.display = formId === 'reset-password-form' ? 'block' : 'none';
+
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+ 
+        function togglePasswordVisibility(passwordFieldId) {
+            const passwordInput = document.getElementById(passwordFieldId);
+            const passwordToggle = passwordInput.nextElementSibling;
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordToggle.innerText = '👁️';
+            } 
+
+            else {
+                passwordInput.type = 'password';
+                passwordToggle.innerText = '👁️';
+            }
+        }
+
+        
+        function validateLogin() {
+            const email = document.getElementsByName('email')[0].value;
+            const password = document.getElementsByName('password')[0].value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (!email || !password) {
+                errorMessage.innerText = 'Please enter both email and password.';
+                errorMessage.style.display = 'block';
+                return false;
+            }
+
+            return true;
+        }
+
+        
+        function validateSignup() {
+            const name = document.getElementsByName('name')[0].value;
+            const email = document.getElementsByName('email')[0].value;
+            const password = document.getElementsByName('password')[0].value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (!name || !email || !password) {
+                errorMessage.innerText = 'Please enter name, email, and password.';
+                errorMessage.style.display = 'block';
+                return false;
+            }
+
+            return true;
+        }
+
+        
+        function validateResetPassword() {
+            const email = document.getElementsByName('email')[1].value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (!email) {
+                errorMessage.innerText = 'Please enter your email to reset password.';
+                errorMessage.style.display = 'block';
+                return false;
+            }
+
+            return true;
+        }
+    
+    </script>
+</body>
+</html>

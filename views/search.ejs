@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pakPOL : Search Data</title>
+
+  <link rel="icon" href="/ICONS/police-handcuffs main favicon.png" type="image/x-icon">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/search.css">
+
+</head>
+<body>
+
+<!-- search.ejs -->
+<%- include("partials/navbar.ejs") %>
+
+<div class="container">
+
+  <h3 class="mt-4">Search Results</h3>
+
+    <div class="row mt-4">
+
+        <% if (results.length > 0) { %>
+
+            <% results.forEach((result) => { %>
+
+                <div class="col-md-4 mb-4">
+
+                    <% if (result.Criminal_Name) { %>
+                        
+                        <div class="search_card">
+                            <h4 class="criminal_name_search">Criminal: <%= result.Criminal_Name %></h4>
+                            
+                            <a href="/criminal/<%= result.id %>"><img src="<%= result.Criminal_Image %>" alt="" /></a>
+                        </div>
+                    
+                    
+                    <% } else if (result.Officer_Name) { %>
+            
+                        <div class="search_card">
+                            <h4>Officer Name: <%= result.Officer_Name %></h4>
+                        </div>
+            
+                    
+                    <% } else if (result.Badge_Number) { %>
+                    
+                        <div class="search_card">
+                            <h4>Officer Badge Number: <%= result.Badge_Number %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Witness_Name) { %>
+                    
+                        <div class="search_card">
+                            <h4>Witness: <%= result.Witness_Name %></h4>
+                        </div>
+                    
+
+                    <% } else if (result.Criminal_Alias_Name) { %>
+                        
+                        <div class="search_card">
+                            <h4>Criminal Alias: <%= result.Criminal_Alias_Name %></h4>
+                        </div>
+                    
+
+                    <% } else if (result.Suspect_Name) { %>
+                        
+                        <div class="search_card">
+                            <h4>Suspect: <%= result.Suspect_Name %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Evidence_Type) { %>
+                        
+                        <div class="search_card">
+                            <h4>Evidence Type: <%= result.Evidence_Type %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Evidence_Id) { %>
+                        
+                        <div class="search_card">
+                            <h4>Evidence Id: <%= result.Evidence_Id %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Sentence_Id) { %>
+                    
+                        <div class="search_card">
+                            <h4>Sentence Id: <%= result.Sentence_Id %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Jail_Name) { %>
+                    
+                        <div class="search_card">
+                            <h4>Jail: <%= result.Jail_Name %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Crime_Id) { %>
+                    
+                        <div class="search_card">
+                            <h4>Crime Id: <%= result.Crime_Id %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Crime_Type) { %>
+                    
+                        <div class="search_card">
+                            <h4>Crime Type: <%= result.Crime_Type %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Arrest_Id) { %>
+                    
+                        <div class="search_card">
+                            <h4>Arrest: <%= result.Arrest_Id %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Investigation_Id) { %>
+                    
+                        <div class="search_card">
+                            <h4>Investigation: <%= result.Investigation_Id %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Case_Id) { %>
+                    
+                        <div class="search_card">
+                            <h4>Case: <%= result.Case_Id %></h4>
+                        </div>
+                    
+                    
+                    <% } else if (result.Victim_Name) { %>
+
+                        <div class="search_card">
+                            <h4>Victim: <%= result.Victim_Name %></h4>
+                        </div>
+
+                    <% } %>
+
+                </div>
+
+            <% }) %>
+
+
+        <% } else { %>
+
+            <div class="col">
+                <p>No results found.</p>
+            </div>
+
+        <% } %>
+
+    </div>
+
+</div>
+
+
+
+
+<!-- Bootstrap JS -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+</body>
+
+</html>

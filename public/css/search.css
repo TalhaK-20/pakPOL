@@ -1,0 +1,61 @@
+
+.container{
+    position: relative;
+    top: 30px;
+}
+
+.search_card{
+    height: 271;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 320px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.search_card:hover{
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(244, 32, 32, 0.3);
+}
+
+.search_card img{
+    width: 161px;
+    position: relative;
+    height: 169px;
+    top: 31px;
+    /* object-fit: cover; */
+    border-radius: 12%;
+    margin-bottom: 72px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.search_card h4{
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.search_card p{
+    margin: 0;
+    font-size: 16px;
+    color: #555;
+}
+  
+.dropdown-menu.show{
+    display: block;
+    position: absolute;
+    left: -110px;
+    border-color: darkred;
+    border-radius: 15px;
+    opacity: 82%;
+}
+
+.form-group label{
+    font-weight: bold;
+}
+

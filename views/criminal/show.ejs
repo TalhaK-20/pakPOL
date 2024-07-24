@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pakPOL : Criminal Record</title>
+
+    <link rel="icon" href="/ICONS/police-handcuffs main favicon.png" type="image/x-icon">
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <style>
+
+  p{
+    text-align: center;
+  }
+  
+  </style>
+
+  <body>
+
+    <%- include("../partials/navbar.ejs") %>
+
+    <div class="container">
+      <h3 style="top: 43px; text-align: center; position: relative; left: -1%;"><u>Criminal Record of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
+
+      
+      <div class="data">
+
+        <img src="<%= foundcriminal.Criminal_Image  %>" alt="" />
+        <p><b>Id :</b> <%= foundcriminal.Criminal_Id %></p>
+        <p><b>Name :</b> <%= foundcriminal.Criminal_Name %></p>
+
+
+        <p><b>Wanted by Country :</b> <%= foundcriminal.Criminal_WantedByCountry %></p>
+        <p><b>Crime :</b> <%= foundcriminal.Criminal_Crime %></p>
+
+
+        <p><b>CNIC :</b> <%= foundcriminal.Criminal_CNIC %></p>
+        <p><b>Gender :</b> <%= foundcriminal.Criminal_Gender %></p>
+      
+
+        <p><b>Height (in feet) : </b><%= foundcriminal.Criminal_Height %></p>
+        <p><b>Weight (in kgs) : </b><%= foundcriminal.Criminal_Weight %></p>
+
+
+        <p><b>Nationality : </b><%= foundcriminal.Criminal_Nationality %></p>
+        <p><b>Spoken Languages : </b><%= foundcriminal.Criminal_SpokenLanguages %></p>
+      
+
+        <p><b>State of Case : </b><%= foundcriminal.Criminal_StateOfCase %></p>
+        <p><b>Published : </b><%= foundcriminal.Criminal_Published %></p>
+
+
+        <a href="/criminal" class="btn btn-primary">Go Back</a>
+
+
+        <a href="/criminal/<%= foundcriminal.id %>/edit" class="btn btn-success">Edit</a>
+
+
+        <form
+          action="/criminal/<%= foundcriminal.id %>?_method=delete"
+          method="post"
+          style="display: inline-block">
+
+          <button class="btn btn-danger">Delete</button>
+        </form>
+      
+      
+       </div> <!-- data class div ends here -->
+       
+    </div> <!-- container class div ends here -->
+
+
+
+
+  <script src="/js/bootstrap.min.js"></script>
+  
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
+

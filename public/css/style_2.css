@@ -1,0 +1,91 @@
+
+/* body{
+  background-image: url(../IMAGES/Horror.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-x: 90%;
+  background-position-y: 35%;
+} */
+
+.container{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  top: 800px;
+}
+  
+.flex-box{
+  width: 160px;
+  height: 168px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0d2d2;
+  border-radius: 14px;
+}
+  
+.flex-box a{
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+  
+.flex-box img{
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+}
+  
+.flex-box span{
+  font-size: 14px;
+  font-weight: bold;
+}
+   
+.navbar-brand,
+.navbar-nav .nav-link{
+  color: #fff;
+}
+
+.navbar-nav{
+  justify-content: center;
+}
+
+.navbar-nav .nav-link{
+  padding: 0.5rem 1rem;
+}
+
+.form-inline{
+  justify-content: center;
+}
+
+.bg-dark{
+  background-color: #c9c9c9!important;
+}
+
+.home-link:hover{
+  color: red;
+}
+ 
+.container .flex-box{
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+}
+
+.container .flex-box:hover{
+  transform: scale(0.9);
+  box-shadow: 0 0 40px rgba(20, 17, 17, 0.5);
+}
+
+.dropdown-menu.show{
+  display: block;
+  position: absolute;
+  left: -110px;
+  border-color: darkred;
+  border-radius: 15px;
+  opacity: 72%;
+}
+
