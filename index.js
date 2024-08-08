@@ -185,7 +185,7 @@ app.post('/reset-password', async (req, res) => {
         const mailOptions = {
           from: 'tk839587@gmail.com',
               to: foundUser.email,
-              subject: 'Password Reset Request for PakPOL Account',
+              subject: 'Password Reset Request for pakPOL Account',
               html: `
                 <p>Dear User,</p>
                 
@@ -205,7 +205,7 @@ app.post('/reset-password', async (req, res) => {
                 
                 <p><b>Talha Khalid</b></p>
                 
-                <p><b>Founder and Head of PakPOL</b></p> 
+                <p><b>Founder and Head of pakPOL</b></p> 
 
               `
         };
