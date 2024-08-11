@@ -28,50 +28,57 @@
     <%- include("../partials/navbar.ejs") %>
 
     <div class="container">
+
       <h3 style="top: 43px; text-align: center; position: relative; left: -1%;"><u>Criminal Record of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
 
-      
       <div class="data">
 
         <img src="<%= foundcriminal.Criminal_Image  %>" alt="" />
-        <p><b>Id :</b> <%= foundcriminal.Criminal_Id %></p>
+
+        <p><b>Id :</b><a href="/criminal/<%= foundcriminal.id %>"> <%= foundcriminal.id %></a></p>
+        
         <p><b>Name :</b> <%= foundcriminal.Criminal_Name %></p>
 
-
         <p><b>Wanted by Country :</b> <%= foundcriminal.Criminal_WantedByCountry %></p>
+
         <p><b>Crime :</b> <%= foundcriminal.Criminal_Crime %></p>
 
-
         <p><b>CNIC :</b> <%= foundcriminal.Criminal_CNIC %></p>
+
         <p><b>Gender :</b> <%= foundcriminal.Criminal_Gender %></p>
       
-
         <p><b>Height (in feet) : </b><%= foundcriminal.Criminal_Height %></p>
+      
         <p><b>Weight (in kgs) : </b><%= foundcriminal.Criminal_Weight %></p>
 
-
         <p><b>Nationality : </b><%= foundcriminal.Criminal_Nationality %></p>
-        <p><b>Spoken Languages : </b><%= foundcriminal.Criminal_SpokenLanguages %></p>
-      
+
+        <p><b>Spoken Languages : </b><%= foundcriminal.Criminal_SpokenLanguages %></p>      
 
         <p><b>State of Case : </b><%= foundcriminal.Criminal_StateOfCase %></p>
+        
         <p><b>Published : </b><%= foundcriminal.Criminal_Published %></p>
 
+        <br>
+
+        <h3><p><a href="/criminal/gallery/<%= foundcriminal.id %>">Gallery Section</a></p></h3>
+
+        <br>
+        <hr>
+        <br>
 
         <a href="/criminal" class="btn btn-primary">Go Back</a>
 
-
         <a href="/criminal/<%= foundcriminal.id %>/edit" class="btn btn-success">Edit</a>
-
 
         <form
           action="/criminal/<%= foundcriminal.id %>?_method=delete"
           method="post"
           style="display: inline-block">
-
           <button class="btn btn-danger">Delete</button>
         </form>
-      
+        
+        <hr>
       
        </div> <!-- data class div ends here -->
        
@@ -90,4 +97,3 @@
 
   </body>
 </html>
-

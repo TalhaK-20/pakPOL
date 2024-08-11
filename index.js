@@ -500,10 +500,20 @@ app.get("/search", async (req, res) => {
   }
 
 });
- 
+
+
+
+
+app.get("/criminal/gallery/:id", async (req, res) => {
+  const { id } = req.params;
+  const foundcriminal = await Criminal.findById(id);
+  res.render("criminal/gallery-section", { foundcriminal });
+});
+
 
 
 
 app.listen(port,() => {
   console.log(`Server listening at port ${port}`);
 })
+
