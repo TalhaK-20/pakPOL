@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pakPOL | Upload Video</title>
+
+    <link rel="icon" href="/gallery/ICONS/favicon.png" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 24px;
+            color: #343a40;
+            margin-bottom: 30px;
+            text-align: center;
+            transition: color 0.3s ease;
+        }
+
+        h3:hover {
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        form {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        h6 {
+            font-size: 20px;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 8px;
+            width: calc(100% - 16px);
+            box-sizing: border-box;
+        }
+
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.02);
+        }
+
+        .submit-btn:active {
+            background-color: #004494;
+        }
+    </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="height: 82px; background-color: #ebf5ff !important;">
+
+
+    <a class="navbar-brand" href="/home"><img src="../../../../gallery/ICONS/logo.png" alt="Logo" style="position: relative; left: 2%; top: 10px; height: 100px; width: 100px;"><p></p></a>
+  
+  
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+  
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item active">
+          <a class="nav-link home-link" href="/home" style="color: rgb(110, 108, 108);"><b>Home</b></a>
+        </li>
+      </ul>
+  
+  
+      <div class="dropdown">
+  
+        <button class="btn btn-outline-light dropdown-toggle" type="button" id="searchDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #afafaf">
+        Search
+        </button>
+  
+  
+        <div class="dropdown-menu dropdown-menu-lg-right" aria-labelledby="searchDropdown">
+  
+  
+          <form class="px-4 py-3" action="/search" method="get">
+            <div class="form-group">
+  
+              <label for="searchName">Search by Name</label>
+              <input type="text" class="form-control" id="searchName" name="searchName" placeholder="Enter a name">
+  
+            </div>
+  
+  
+            <div class="form-group">
+  
+              <label for="searchId">Search by ID</label>
+              <input type="text" class="form-control" id="searchId" name="searchId" placeholder="Enter an ID">
+  
+            </div>
+  
+  
+            <div class="form-group">
+            
+              <label for="searchType">Search by Type</label>
+              <input type="text" class="form-control" id="searchType" name="searchType" placeholder="Enter a type">
+            
+            </div>
+  
+  
+            <div class="form-group">
+            
+              <label for="searchRank">Search by Rank</label>
+              <input type="text" class="form-control" id="searchRank" name="searchRank" placeholder="Enter a rank">
+            
+            </div>
+  
+  
+            <button type="submit" class="btn btn-primary">Search</button>
+  
+          </form>
+  
+        </div>
+        
+        <a class="btn btn-outline-light ml-2" href="/logout" style="background-color: #afafaf">Log Out</a>
+      
+      </div>
+    
+    </div>
+  
+</nav>
+  
+    <div class="container">
+
+      <h3><u>Video Uploading Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
+
+        <form id="assignmentForm" action="/submit-interrogation-video/<%= foundcriminal.id %>" method="POST" enctype="multipart/form-data">
+
+            <h6>Interrogation Video</h6>
+            <input type="hidden" name="foundcriminal" value="<%= foundcriminal.id %>">
+            <input type="file" name="file" accept="*/*" required>
+  
+            <button type="submit" class="submit-btn">Upload</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+

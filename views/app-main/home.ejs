@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pakPOL | Home</title>
+
+    <link rel="icon" href="./gallery/ICONS/favicon.png" type="image/x-icon">
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/style_2.css" />
+
+  <style>
+    
+    /* Just for video styling */
+
+    .video-container{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .video-container video{
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+    }
+
+    .overlay{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+    }
+
+    /* Rest of your styles */
+
+    h1{
+      font-size: 28px;
+      color: #333333;
+      margin-bottom: 20px;
+    }
+    
+    h2{
+      font-size: 18px;
+      color: #666666;
+    }
+
+    .dropdown-menu.show{
+      display: block;
+      position: absolute;
+      left: -110px;
+      border-color: darkred;
+      border-radius: 15px;
+      opacity: 82%;
+    }
+ 
+    .form-group label{
+      font-weight: bold;
+    }
+
+  </style>
+  
+</head>
+  
+  <body>
+  
+    <div class="video-container">
+      <video autoplay muted loop>
+        <source src="/gallery/VIDEOS/Police Cars.mp4" type="video/mp4">
+      </video>
+    </div>
+  
+    <div class="overlay"></div>
+
+    <%- include("../partials/navbar.ejs") %>
+ 
+    <div class="container_1">
+      <h1 id="brandName" style="text-align: center; font-size: 80px; position: relative; top: 210px; left: 0%; color: rgb(117, 153, 251); font-weight: bolder;"><b></b></h1>
+      <h2 id="developer" style="text-align: center; font-size: 30px; position: relative; top: 240px; left: 0%; color: rgb(242, 156, 156); font-weight: lighter;"></h2>
+    </div>
+
+
+    <div class="container">
+      <div class="flex-box">
+        <a href="/criminal">
+          <img src="/gallery/ICONS/criminal.png" alt="criminal">
+          <span>Criminals</span>
+        </a>
+      </div>
+      
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/criminal alias.png" alt="criminal alias">
+          <span>Criminal Alias</span>
+        </a>
+      </div>
+      
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/crime.png" alt="crime">
+          <span>Crimes</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/arrest.png" alt="arrest">
+          <span>Arrests</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/officer.png" alt="officer">
+          <span>Officers</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/investigation.png" alt="investigation">
+          <span>Investigations</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/case.png" alt="case">
+          <span>Cases</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/witness.png" alt="witness">
+          <span>Witnesses</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/evidence.png" alt="evidence">
+          <span>Evidences</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/suspect.png" alt="suspect">
+          <span>Suspects</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/victim.png" alt="victim">
+          <span>Victims</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/sentence.png" alt="sentence">
+          <span>Sentences</span>
+        </a>
+      </div>
+
+      <div class="flex-box">
+        <a href="#">
+          <img src="/gallery/ICONS/jail.png" alt="jail">
+          <span>Jail</span>
+        </a>
+      </div>
+
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    
+    <script>
+      
+      const brandName = document.getElementById('brandName');
+      const developer = document.getElementById('developer');
+      const brandText = 'Welcome to pakPOL';
+      const developerText = 'Developed by "Team pakPOL"';
+      const typingSpeed = 208;
+  
+      let brandCharIndex = 0;
+      let developerCharIndex = 0;
+  
+      
+      function typeBrandName() {
+        if (brandCharIndex < brandText.length) {
+          brandName.textContent += brandText.charAt(brandCharIndex);
+          brandCharIndex++;
+          setTimeout(typeBrandName, typingSpeed);
+        }
+      }
+  
+      
+      function typeDeveloperName() {
+        if (developerCharIndex < developerText.length) {
+          developer.textContent += developerText.charAt(developerCharIndex);
+          developerCharIndex++;
+          setTimeout(typeDeveloperName, typingSpeed);
+        }
+      }
+  
+      
+      typeBrandName();
+      setTimeout(typeDeveloperName, brandText.length * typingSpeed);
+
+    </script>
+  </body>
+</html>

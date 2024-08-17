@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pakPOL | Gallery Section</title>
+
+    <link rel="icon" href="/gallery/ICONS/favicon.png" type="image/x-icon">
+
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style_2.css" />
+
+  <style>
+    
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+      top: 114px;
+    }
+
+    .flex-box {
+      width: 444px;
+      height: 330px;
+      margin: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f0d2d2;
+      border-radius: 14px;
+    }
+    
+    h1{
+      font-size: 28px;
+      color: #333333;
+      margin-bottom: 20px;
+    }
+    
+    h2{
+      font-size: 18px;
+      color: #666666;
+    }
+
+    .dropdown-menu.show{
+      display: block;
+      position: absolute;
+      left: -110px;
+      border-color: darkred;
+      border-radius: 15px;
+      opacity: 82%;
+    }
+ 
+    .form-group label{
+      font-weight: bold;
+    }
+    
+    .flex-box span {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+  </style>
+  
+</head>
+  
+  <body>
+ 
+    <%- include("../../partials/navbar.ejs") %>
+
+    <h3 style="top: 43px; text-align: center; position: relative; left: -1%;"><u>Gallery Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
+    <div class="container">
+
+      <div class="flex-box">
+        <a href="/criminal/gallery/upload/<%= foundcriminal.id %>">
+          <!-- <img src="/ICONS/criminal.png" alt="criminal"> -->
+          <span>Upload Section</span>
+        </a>
+      </div>
+      
+      <div class="flex-box">
+        <a href="/criminal/gallery/explore/<%= foundcriminal.id %>">
+          <!-- <img src="/ICONS/criminal alias.png" alt="criminal alias"> -->
+          <span>Explore Section</span>
+        </a>
+      </div>
+
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  </body>
+</html>
+

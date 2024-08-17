@@ -137,9 +137,14 @@ const criminalSchema = new mongoose.Schema({
     required: true
   },
   Criminal_Published: {
-    type: String,
+    type: Date,
     required: true
   },
+  Criminal_Interrogation_Video_Download_URL: String,
+  Criminal_Interrogation_Video_View_URL: String,
+
+  Criminal_Confession_Video_Download_URL: String,
+  Criminal_Confession_Video_View_URL: String,
 });
 
 
@@ -539,3 +544,5 @@ Investigation.find()
   .catch(error => {
     console.error('Error:', error);
   });
+
+  
