@@ -406,7 +406,8 @@ app.post("/criminal", upload.single("Criminal_Image"), async (req, res) => {
     Criminal_Nationality,
     Criminal_SpokenLanguages,
     Criminal_StateOfCase,
-    Criminal_Published } = req.body;
+    Criminal_Published,
+    Criminal_Image_URL } = req.body;
   
   const newCriminal = {
     Criminal_Id,
@@ -422,6 +423,7 @@ app.post("/criminal", upload.single("Criminal_Image"), async (req, res) => {
     Criminal_StateOfCase,
     Criminal_Published,
     Criminal_Image: req.file ? "/uploads/" + req.file.filename : null,
+    Criminal_Image_URL
   };
 
   const criminal = new Criminal(newCriminal);
@@ -446,8 +448,20 @@ app.get("/criminal/:id", async (req, res) => {
 // Form to edit specific criminal ---> edit.ejs
 app.get("/criminal/:id/edit",async (req,res)=>{
   const {id} = req.params
-  const foundcriminal = await Criminal.findById(id)  
-  res.render("criminal/edit",{foundcriminal})
+  const foundcriminal = await Criminal.findById(id)
+
+  function formatDateForInput(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+  
+  const formattedDate = formatDateForInput(foundcriminal.Criminal_Published);  
+  res.render("criminal/edit",{foundcriminal, formattedDate})
 });
 
 
@@ -465,7 +479,8 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
     Criminal_Nationality,
     Criminal_SpokenLanguages,
     Criminal_StateOfCase,
-    Criminal_Published } = req.body;
+    Criminal_Published,
+    Criminal_Image_URL } = req.body;
   
     let updatedCriminal = {
     Criminal_Id,
@@ -479,7 +494,8 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
     Criminal_Nationality,
     Criminal_SpokenLanguages,
     Criminal_StateOfCase,
-    Criminal_Published
+    Criminal_Published,
+    Criminal_Image_URL
   };
 
   if(req.file){

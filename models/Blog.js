@@ -116,6 +116,9 @@ const criminalSchema = new mongoose.Schema({
   Criminal_Image: {
     type: String
   },
+  Criminal_Image_URL: {
+    type: String
+  },
   Criminal_Crime: {
     type: String,
     required: true
@@ -544,5 +547,3 @@ Investigation.find()
   .catch(error => {
     console.error('Error:', error);
   });
-
-  

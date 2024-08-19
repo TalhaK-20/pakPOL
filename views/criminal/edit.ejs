@@ -181,12 +181,12 @@
             class="form-control"
             id="Criminal_Published"
             name="Criminal_Published"
-            value="<%= foundcriminal.Criminal_Published %>"
+            value="<%= formattedDate %>"
           />
         </div>
         
 
-        <img src="<%= foundcriminal.Criminal_Image %>" alt="Previous Image">
+        <img src="<%= foundcriminal.Criminal_Image_URL %>" alt="Previous Image">
         
         <p style="text-align: center;"><b>Previous/Old Image</b></p>
         
@@ -201,7 +201,20 @@
             value="<%= foundcriminal.Criminal_Image %>"
           />
         </div>
-         
+        
+        
+        <div class="mb-3">
+          <label for="Criminal_Image_URL" class="form-label">Upload Image URL (Optional)</label>
+          <input
+            type="text"
+            class="form-control"
+            id="Criminal_Image_URL"
+            name="Criminal_Image_URL"
+            value="<%= foundcriminal.Criminal_Image_URL %>"
+          />
+        </div>
+
+
         <button type="submit" class="btn btn-success">Submit</button>
       
       </form>
@@ -229,3 +242,4 @@
      
   </body>
 </html>
+

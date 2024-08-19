@@ -33,7 +33,7 @@
 
       <div class="data">
 
-        <img src="<%= foundcriminal.Criminal_Image  %>" alt="" />
+        <img src="<%= foundcriminal.Criminal_Image_URL %>" alt="" />
 
         <p><b>Id :</b><a href="/criminal/<%= foundcriminal.id %>"> <%= foundcriminal.id %></a></p>
         
@@ -57,7 +57,7 @@
 
         <p><b>State of Case : </b><%= foundcriminal.Criminal_StateOfCase %></p>
         
-        <p><b>Published : </b><%= foundcriminal.Criminal_Published %></p>
+        <p><b>Published : </b><%= new Date(foundcriminal.Criminal_Published).toLocaleString() %></p>
 
         <br>
 
