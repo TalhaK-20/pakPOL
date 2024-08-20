@@ -143,6 +143,12 @@ const criminalSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+
+  filename: String,
+  mimeType: String,
+  googleDriveId: String,
+  fileUrl: String,
+
   Criminal_Interrogation_Video_Download_URL: String,
   Criminal_Interrogation_Video_View_URL: String,
 

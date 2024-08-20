@@ -8,7 +8,25 @@ const fs = require('fs');
 const { google } = require('googleapis');
 
 
+const helmet = require('helmet');
+app.use(helmet());
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    imgSrc: ["'self'", "https://drive.google.com"],
+  },
+}));
+
+
+// Very Important to display Images from DRIVE
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "frame-src 'self' https://drive.google.com");
+  next();
+});
+
+
 // -------------------- For Local Storage --------------------
+
 
 const multer = require("multer");
 const storage = multer.diskStorage({
@@ -27,6 +45,7 @@ const upload = multer({ storage });
 
 
 // -------------------- Automated Emails --------------------
+
 
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
@@ -114,7 +133,7 @@ app.use(
 
 
 
-//      ----------- All Routing and Logics Starts from here -----------
+//      ----------- All Routing and Logic Starts from here -----------
 
 
 
@@ -174,7 +193,7 @@ app.post('/login', async (req, res) => {
 
 
 
-// signup route
+// sign-up route
 app.post('/signup', async (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
@@ -400,17 +419,60 @@ app.get("/criminal/new",(req,res)=>{
 
 
 // Create new criminal  ---> POST
-app.post("/criminal", upload.single("Criminal_Image"), async (req, res) => {
-  const { Criminal_Id, Criminal_Name, Criminal_CNIC, Criminal_Gender, Criminal_Height, Criminal_Weight,    Criminal_Crime,
+app.post("/criminal", upload.single('file'), async (req, res) => {
+  const { 
+    Criminal_Id,
+    Criminal_Name, 
+    Criminal_CNIC, 
+    Criminal_Gender, 
+    Criminal_Height, 
+    Criminal_Weight, 
+    Criminal_Crime,
     Criminal_WantedByCountry,
     Criminal_Nationality,
     Criminal_SpokenLanguages,
     Criminal_StateOfCase,
     Criminal_Published,
-    Criminal_Image_URL } = req.body;
+    Criminal_Image_URL, 
+    Criminal_Image } = req.body;
+
+    const filePath = path.join(__dirname, 'public/uploads/', req.file.filename);
+    const mimeType = req.file.mimetype;
+
+    const response = await drive.files.create({
+      requestBody: {
+          name: req.file.originalname,
+          mimeType: mimeType,
+      },
   
+      media: {
+          mimeType: mimeType,
+          body: fs.createReadStream(filePath),
+      },
+  });
+
+  const fileId = response.data.id;
+
+  await drive.permissions.create({
+      fileId: fileId,
+      requestBody: {
+          role: 'reader',
+          type: 'anyone',
+      },
+  });
+
+  const fileUrl = `https://drive.google.com/thumbnail?id=${fileId}`;
+
+
+  async function getNextCriminalId() {
+    const lastCriminal = await Criminal.findOne({}, {}, { sort: { Criminal_Id: -1 } });
+    return lastCriminal ? lastCriminal.Criminal_Id + 1 : 1;
+  }
+
+  const newCriminalId = await getNextCriminalId();
+
   const newCriminal = {
-    Criminal_Id,
+    Criminal_Id: newCriminalId,
     Criminal_Name,
     Criminal_CNIC,
     Criminal_Gender,
@@ -422,12 +484,20 @@ app.post("/criminal", upload.single("Criminal_Image"), async (req, res) => {
     Criminal_SpokenLanguages,
     Criminal_StateOfCase,
     Criminal_Published,
-    Criminal_Image: req.file ? "/uploads/" + req.file.filename : null,
-    Criminal_Image_URL
+    Criminal_Image: fileUrl,
+    Criminal_Image_URL,
+
+    filename: req.file.originalname,
+    mimeType: mimeType,
+    googleDriveId: fileId,
+    fileUrl: fileUrl
   };
 
   const criminal = new Criminal(newCriminal);
+
   await criminal.save();
+  fs.unlinkSync(filePath);
+
   res.redirect("/criminal");
 
 });
@@ -471,7 +541,10 @@ app.get("/criminal/:id/edit",async (req,res)=>{
 app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => {
   const { id } = req.params;
   
-  const { Criminal_Id, Criminal_Name, Criminal_CNIC, Criminal_Gender, 
+  const {  
+    Criminal_Name, 
+    Criminal_CNIC, 
+    Criminal_Gender, 
     Criminal_Height, 
     Criminal_Weight, 
     Criminal_Crime,
@@ -480,10 +553,37 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
     Criminal_SpokenLanguages,
     Criminal_StateOfCase,
     Criminal_Published,
-    Criminal_Image_URL } = req.body;
+    Criminal_Image_URL,
+    Criminal_Image } = req.body;
+
+    const filePath = path.join(__dirname, 'public/uploads/', req.file.filename);
+    const mimeType = req.file.mimetype;
+
+    const response = await drive.files.create({
+      requestBody: {
+          name: req.file.originalname,
+          mimeType: mimeType,
+      },
   
-    let updatedCriminal = {
-    Criminal_Id,
+      media: {
+          mimeType: mimeType,
+          body: fs.createReadStream(filePath),
+      },
+  });
+
+  const fileId = response.data.id;
+
+  await drive.permissions.create({
+      fileId: fileId,
+      requestBody: {
+          role: 'reader',
+          type: 'anyone',
+      },
+  });
+
+  const fileUrl = `https://drive.google.com/thumbnail?id=${fileId}`;
+
+  let updatedCriminal = {
     Criminal_Name,
     Criminal_CNIC,
     Criminal_Gender,
@@ -495,15 +595,20 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
     Criminal_SpokenLanguages,
     Criminal_StateOfCase,
     Criminal_Published,
-    Criminal_Image_URL
+    Criminal_Image_URL,
+    Criminal_Image: fileUrl,
+
+    filename: req.file.originalname,
+    mimeType: mimeType,
+    googleDriveId: fileId,
+    fileUrl: fileUrl
   };
-
-  if(req.file){
-    updatedCriminal.Criminal_Image = "/uploads/" + req.file.filename;
-  }
-
+  
   await Criminal.findByIdAndUpdate(id, updatedCriminal);
+  fs.unlinkSync(filePath);
+  
   res.redirect("/criminal");
+
 });
 
 
@@ -710,4 +815,3 @@ app.post('/submit-interrogation-video/:id', upload.single('file'), async (req, r
 app.listen(port,() => {
   console.log(`Server listening at port ${port}`);
 })
-

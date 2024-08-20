@@ -27,7 +27,7 @@
       <form class="f" action="/criminal" method="post" enctype="multipart/form-data">
 
 
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label for="Criminal_Id" class="form-label">Id</label>
           <input
             type="number"
@@ -36,7 +36,7 @@
             name="Criminal_Id"
             max="9999"
           />
-        </div>
+        </div> -->
 
 
         <div class="mb-3">
@@ -183,7 +183,9 @@
             type="file"
             class="form-control"
             id="Criminal_Image"
-            name="Criminal_Image"
+            name="file" 
+            accept="*/*" 
+            required
           />
         </div>
 

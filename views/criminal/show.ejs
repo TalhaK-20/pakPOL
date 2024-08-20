@@ -1,99 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pakPOL | Criminal Record</title>
-
     <link rel="icon" href="/gallery/ICONS/favicon.png" type="image/x-icon">
-
-    <!-- bootstrap css -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css" />
-  </head>
+    
+    
+    <style>
+      
+      body {
+        background-color: #ffff;
+        color: #f5f5f5;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .container {
+        background-color: #030420;
+        border-radius: 54px;
+        padding: 20px;
+        max-width: 826px;
+        margin: 100px auto;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      }
 
-  <style>
+      .container h3 {
+        color: #d9534f;
+        margin-bottom: 16px;
+        text-align: center;
+        position: relative;
+        bottom: -20px;
+      }
 
-  p{
-    text-align: center;
-  }
-  
-  </style>
+      .data {
+        text-align: center;
+      }
 
-  <body>
+      .data img {
+        position: relative;
+        bottom: 40px;
+        width: 45%;
+        height: 208px;
+        max-width: 600px;
+        border: 0px solid;
+        border-radius: 10px;
+        transition: transform 0.3s;
+      }
 
-    <%- include("../partials/navbar.ejs") %>
+      .data img:hover {
+        transform: scale(1.05);
+      }
 
+      a {
+        color: white;
+      }
+
+      a:hover {
+        color: yellowgreen;
+      }
+
+      p {
+        font-size: 18px;
+        margin: 10px 0;
+      }
+
+      b {
+        color: #d9534f;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        border: none;
+        margin: 5px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(45deg, #0056b3, #004080);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn-success {
+        background: linear-gradient(45deg, #28a745, #218838);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: linear-gradient(45deg, #218838, #1e7e34);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn-danger {
+        background: linear-gradient(45deg, #dc3545, #c82333);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: linear-gradient(45deg, #c82333, #bd2130);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .btn-group {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      
+      .btn-group .btn {
+        margin: 0 10px;
+      }
+     
+      .modal-dialog {
+        max-width: 800px;
+      }
+      
+      .modal-content {
+        border-radius: 8px;
+      }
+        
+      .modal-header {
+        border-bottom: none;
+        color: black;
+      }
+        
+      .modal-body {
+        padding: 20px;
+        color: black;
+      }
+        
+      .modal-footer {
+        border-top: none;
+      }
+    
+    
+    </style>
+    
+</head>
+<body>
+    
+  <%- include("../partials/navbar.ejs") %>
     <div class="container">
-
-      <h3 style="top: 43px; text-align: center; position: relative; left: -1%;"><u>Criminal Record of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
-
-      <div class="data">
-
-        <img src="<%= foundcriminal.Criminal_Image_URL %>" alt="" />
-
-        <p><b>Id :</b><a href="/criminal/<%= foundcriminal.id %>"> <%= foundcriminal.id %></a></p>
+        <h3><u>Criminal Record of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
         
-        <p><b>Name :</b> <%= foundcriminal.Criminal_Name %></p>
+        <div class="data">
+            <img src="<%= foundcriminal.Criminal_Image %>" alt="" />
+            
+            <br>
+            
+            <p><b>Id :</b><a href="/criminal/<%= foundcriminal.id %>"> <%= foundcriminal.id %></a></p>
+            
+            <p><b>Name :</b> <%= foundcriminal.Criminal_Name %></p>
+            
+            <p><b>Wanted by Country :</b> <%= foundcriminal.Criminal_WantedByCountry %></p>
+            
+            <p><b>Crime :</b> <%= foundcriminal.Criminal_Crime %></p>
+            
+            <p><b>CNIC :</b> <%= foundcriminal.Criminal_CNIC %></p>
+            
+            <p><b>Gender :</b> <%= foundcriminal.Criminal_Gender %></p>
+            
+            <p><b>Height (in feet) : </b><%= foundcriminal.Criminal_Height %></p>
+            
+            <p><b>Weight (in kgs) : </b><%= foundcriminal.Criminal_Weight %></p>
+            
+            <p><b>Nationality : </b><%= foundcriminal.Criminal_Nationality %></p>
+            
+            <p><b>Spoken Languages : </b><%= foundcriminal.Criminal_SpokenLanguages %></p>
+            
+            <p><b>State of Case : </b><%= foundcriminal.Criminal_StateOfCase %></p>
+            
+            <p><b>Published : </b><%= new Date(foundcriminal.Criminal_Published).toLocaleString() %></p>
+            
+            <br>
+            <br>
+            
+            <h2> <a href="/criminal/gallery/<%= foundcriminal.id %>">Gallery Section</a> </h2>
+            
+            <br>
+            <hr>
+            <br>
+            
+            <div class="special-buttons" style="position: relative;
+            margin-top: 151px;
+            top: -124px;">
 
-        <p><b>Wanted by Country :</b> <%= foundcriminal.Criminal_WantedByCountry %></p>
-
-        <p><b>Crime :</b> <%= foundcriminal.Criminal_Crime %></p>
-
-        <p><b>CNIC :</b> <%= foundcriminal.Criminal_CNIC %></p>
-
-        <p><b>Gender :</b> <%= foundcriminal.Criminal_Gender %></p>
-      
-        <p><b>Height (in feet) : </b><%= foundcriminal.Criminal_Height %></p>
-      
-        <p><b>Weight (in kgs) : </b><%= foundcriminal.Criminal_Weight %></p>
-
-        <p><b>Nationality : </b><%= foundcriminal.Criminal_Nationality %></p>
-
-        <p><b>Spoken Languages : </b><%= foundcriminal.Criminal_SpokenLanguages %></p>      
-
-        <p><b>State of Case : </b><%= foundcriminal.Criminal_StateOfCase %></p>
+            <a href="/criminal" class="btn btn-primary">Go Back</a>
+            
+            <a href="/criminal/<%= foundcriminal.id %>/edit" class="btn btn-success">Edit</a>
+            
+            
+            <form action="/criminal/<%= foundcriminal.id %>?_method=delete" method="post" style="display: inline-block">
+                <button class="btn btn-danger">Delete</button>
+            </form>  
+          
+          </div>
+            
+          <br>
         
-        <p><b>Published : </b><%= new Date(foundcriminal.Criminal_Published).toLocaleString() %></p>
+        </div>
 
-        <br>
+    </div>
 
-        <h3><p><a href="/criminal/gallery/<%= foundcriminal.id %>">Gallery Section</a></p></h3>
 
-        <br>
-        <hr>
-        <br>
 
-        <a href="/criminal" class="btn btn-primary">Go Back</a>
 
-        <a href="/criminal/<%= foundcriminal.id %>/edit" class="btn btn-success">Edit</a>
-
-        <form
-          action="/criminal/<%= foundcriminal.id %>?_method=delete"
-          method="post"
-          style="display: inline-block">
-          <button class="btn btn-danger">Delete</button>
-        </form>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    
+    <script>
+        $(document).ready(function() {
+            $('.btn-danger').on('click', function(e) {
+                e.preventDefault();
+                $('#confirmDeleteModal').modal('show');
+            });
+        });
+    </script>
+    
+    
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         
-        <hr>
-      
-       </div> <!-- data class div ends here -->
-       
-    </div> <!-- container class div ends here -->
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
 
-
-
-
-  <script src="/js/bootstrap.min.js"></script>
-  
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-  
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-  </body>
+                </div>
+                
+                <div class="modal-body">
+                    Are you sure you want to delete this record?
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    
+                    <form id="deleteForm" action="" method="post">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
