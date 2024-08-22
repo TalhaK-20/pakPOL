@@ -79,13 +79,13 @@
         
         
         <div class="mb-3">
-          <label for="Criminal_CNIC" class="form-label">CNIC</label>
+          <label for="CNIC" class="form-label">CNIC</label>
           <input
-            type="number"
+            type="text"
             class="form-control"
-            id="Criminal_CNIC"
-            name="Criminal_CNIC"
-            value="<%= foundcriminal.Criminal_CNIC %>"
+            id="CNIC"
+            name="CNIC"
+            value="<%= foundcriminal.CNIC %>"
           />
         </div>
         
@@ -168,8 +168,8 @@
             type="text"
             class="form-control"
             id="Criminal_StateOfCase"
-            name="Criminal_StateOfCase"
-            value="<%= foundcriminal.Criminal_StateOfCase %>">
+            name="Criminal_StateOfCase">
+            <%= foundcriminal.Criminal_StateOfCase.trim() %>
           </textarea>
         </div>
         
@@ -199,7 +199,7 @@
             id="Criminal_Image"
             name="Criminal_Image" 
             accept="*/*" 
-            value="<%= foundcriminal.Criminal_Image %>"
+            value="<%= foundcriminal.filename %>"
           />
         </div>
         

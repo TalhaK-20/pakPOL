@@ -109,9 +109,7 @@ const criminalSchema = new mongoose.Schema({
     required: true
   },
   Criminal_CNIC: {
-    type: Number,
-    required: true,
-    unique: true
+    type: String,
   },
   Criminal_Image: {
     type: String
@@ -143,6 +141,8 @@ const criminalSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+
+  CNIC: String,
 
   filename: String,
   mimeType: String,

@@ -420,10 +420,9 @@ app.get("/criminal/new",(req,res)=>{
 
 // Create new criminal  ---> POST
 app.post("/criminal", upload.single('file'), async (req, res) => {
-  const { 
-    Criminal_Id,
+  const {
     Criminal_Name, 
-    Criminal_CNIC, 
+    CNIC, 
     Criminal_Gender, 
     Criminal_Height, 
     Criminal_Weight, 
@@ -433,8 +432,7 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
     Criminal_SpokenLanguages,
     Criminal_StateOfCase,
     Criminal_Published,
-    Criminal_Image_URL, 
-    Criminal_Image } = req.body;
+    Criminal_Image_URL } = req.body;
 
     const filePath = path.join(__dirname, 'public/uploads/', req.file.filename);
     const mimeType = req.file.mimetype;
@@ -474,7 +472,7 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
   const newCriminal = {
     Criminal_Id: newCriminalId,
     Criminal_Name,
-    Criminal_CNIC,
+    CNIC,
     Criminal_Gender,
     Criminal_Height,
     Criminal_Weight,
@@ -539,11 +537,12 @@ app.get("/criminal/:id/edit",async (req,res)=>{
 
 // Update specific criminal
 app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => {
+  
   const { id } = req.params;
   
-  const {  
+  const {
     Criminal_Name, 
-    Criminal_CNIC, 
+    CNIC, 
     Criminal_Gender, 
     Criminal_Height, 
     Criminal_Weight, 
@@ -554,38 +553,13 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
     Criminal_StateOfCase,
     Criminal_Published,
     Criminal_Image_URL,
-    Criminal_Image } = req.body;
+  } = req.body;
 
-    const filePath = path.join(__dirname, 'public/uploads/', req.file.filename);
-    const mimeType = req.file.mimetype;
-
-    const response = await drive.files.create({
-      requestBody: {
-          name: req.file.originalname,
-          mimeType: mimeType,
-      },
-  
-      media: {
-          mimeType: mimeType,
-          body: fs.createReadStream(filePath),
-      },
-  });
-
-  const fileId = response.data.id;
-
-  await drive.permissions.create({
-      fileId: fileId,
-      requestBody: {
-          role: 'reader',
-          type: 'anyone',
-      },
-  });
-
-  const fileUrl = `https://drive.google.com/thumbnail?id=${fileId}`;
+  const existingCriminal = await Criminal.findById(id);
 
   let updatedCriminal = {
     Criminal_Name,
-    Criminal_CNIC,
+    CNIC,
     Criminal_Gender,
     Criminal_Height,
     Criminal_Weight,
@@ -596,17 +570,66 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
     Criminal_StateOfCase,
     Criminal_Published,
     Criminal_Image_URL,
-    Criminal_Image: fileUrl,
-
-    filename: req.file.originalname,
-    mimeType: mimeType,
-    googleDriveId: fileId,
-    fileUrl: fileUrl
   };
+
+  if (req.file) {
+    const filePath = path.join(__dirname, 'public/uploads/', req.file.filename);
+    
+    const mimeType = req.file.mimetype;
+
+    const response = await drive.files.create({
+      
+      requestBody: {
+        name: req.file.originalname,
+        mimeType: mimeType,
+      },
+      
+      media: {
+        mimeType: mimeType,
+        body: fs.createReadStream(filePath),
+      },
+    });
+
+    const fileId = response.data.id;
+
+    await drive.permissions.create({
+      
+      fileId: fileId,
+      requestBody: {
+        role: 'reader',
+        type: 'anyone',
+      },
+    });
+
+    const fileUrl = `https://drive.google.com/thumbnail?id=${fileId}`;
+
+    updatedCriminal = {
+      ...updatedCriminal,
+      Criminal_Image: fileUrl,
+      // Criminal_Image_URL: fileUrl,
+      filename: req.file.originalname,
+      mimeType: mimeType,
+      googleDriveId: fileId,
+      fileUrl: fileUrl,
+    };
+
+    fs.unlinkSync(filePath);
+  } 
   
+  else {
+    updatedCriminal = {
+      ...updatedCriminal,
+      Criminal_Image: existingCriminal.Criminal_Image,
+      // Criminal_Image_URL: existingCriminal.Criminal_Image_URL,
+      filename: existingCriminal.filename,
+      mimeType: existingCriminal.mimeType,
+      googleDriveId: existingCriminal.googleDriveId,
+      fileUrl: existingCriminal.fileUrl,
+    };
+  }
+
   await Criminal.findByIdAndUpdate(id, updatedCriminal);
-  fs.unlinkSync(filePath);
-  
+
   res.redirect("/criminal");
 
 });
@@ -815,3 +838,4 @@ app.post('/submit-interrogation-video/:id', upload.single('file'), async (req, r
 app.listen(port,() => {
   console.log(`Server listening at port ${port}`);
 })
+
