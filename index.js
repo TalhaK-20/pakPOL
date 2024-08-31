@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/uploads/");
+    cb(null, "app-main/public/uploads/");
   },
   
   filename: (req, file, cb) => {
@@ -108,8 +108,8 @@ const session = require("express-session");
 const port = 5000
  
 
-const Login = require('./models/Login')
-const { Officer, Arrest, Crime, Criminal, Criminal_Alias, Jail, Sentence, Cases, Victim, Witness, Suspect, Evidence, Investigation } = require('./models/Blog')
+const Login = require('./models/admin-login-app-main')
+const { Officer, Arrest, Crime, Criminal, Criminal_Alias, Jail, Sentence, Cases, Victim, Witness, Suspect, Evidence, Investigation } = require('./models/crime-related-app-main')
 
 
 connectDatabase()
@@ -161,7 +161,7 @@ app.post('/login', async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const securityKey = req.body.securityKey;
-  const predefinedSecurityKey = '012azqa***p&<QA/';
+  const predefinedSecurityKey = '20';
 
   try{
     
@@ -199,7 +199,7 @@ app.post('/signup', async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const securityKey = req.body.securityKey;
-  const predefinedSecurityKey = '012azqa***p&<QA/';
+  const predefinedSecurityKey = '20';
 
   try{
     
@@ -237,7 +237,7 @@ app.post('/reset-password', async (req, res) => {
   try{
     console.log('Reset password request received for email:', email);
 
-    const predefinedSecurityKey = '012azqa***p&<QA/';
+    const predefinedSecurityKey = '20';
 
     if(securityKey === predefinedSecurityKey){
       const foundUser = await Login.findOne({ email: email });
@@ -404,7 +404,7 @@ app.get('/logout', (req, res) => {
 // Display all criminal ---> index.ejs
 app.get("/criminal",async (req,res)=>{
   const criminal = await Criminal.find({})
-  res.render("criminal/index",{criminal})
+  res.render("crime-related-app-main/criminal/index",{criminal})
 })
 
 
@@ -412,7 +412,7 @@ app.get("/criminal",async (req,res)=>{
 
 // Form to create new criminal  ---> new.ejs
 app.get("/criminal/new",(req,res)=>{
-  res.render("criminal/new")
+  res.render("crime-related-app-main/criminal/new")
 })
 
 
@@ -434,7 +434,7 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
     Criminal_Published,
     Criminal_Image_URL } = req.body;
 
-    const filePath = path.join(__dirname, 'public/uploads/', req.file.filename);
+    const filePath = path.join(__dirname, 'app-main/public/uploads/', req.file.filename);
     const mimeType = req.file.mimetype;
 
     const response = await drive.files.create({
@@ -507,7 +507,7 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
 app.get("/criminal/:id", async (req, res) => {
   const { id } = req.params;
   const foundcriminal = await Criminal.findById(id);
-  res.render("criminal/show", { foundcriminal });
+  res.render("crime-related-app-main/criminal/show", { foundcriminal });
 });
 
 
@@ -529,7 +529,7 @@ app.get("/criminal/:id/edit",async (req,res)=>{
   }
   
   const formattedDate = formatDateForInput(foundcriminal.Criminal_Published);  
-  res.render("criminal/edit",{foundcriminal, formattedDate})
+  res.render("crime-related-app-main/criminal/edit",{foundcriminal, formattedDate})
 });
 
 
@@ -573,7 +573,7 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
   };
 
   if (req.file) {
-    const filePath = path.join(__dirname, 'public/uploads/', req.file.filename);
+    const filePath = path.join(__dirname, 'app-main/public/uploads/', req.file.filename);
     
     const mimeType = req.file.mimetype;
 
@@ -711,7 +711,7 @@ app.get("/search", async (req, res) => {
 app.get("/criminal/gallery/:id", async (req, res) => {
   const { id } = req.params;
   const foundcriminal = await Criminal.findById(id);
-  res.render("criminal/gallery/gallery-section", { foundcriminal });
+  res.render("crime-related-app-main/criminal/gallery/gallery-section", { foundcriminal });
 });
 
 
@@ -720,7 +720,7 @@ app.get("/criminal/gallery/:id", async (req, res) => {
 app.get("/criminal/gallery/upload/:id", async (req, res) => {
   const { id } = req.params;
   const foundcriminal = await Criminal.findById(id);
-  res.render("criminal/gallery/upload-section/upload", { foundcriminal });
+  res.render("crime-related-app-main/criminal/gallery/upload-section/upload", { foundcriminal });
 });
 
 
@@ -729,7 +729,7 @@ app.get("/criminal/gallery/upload/:id", async (req, res) => {
 app.get("/criminal/gallery/upload/video/:id", async (req, res) => {
   const { id } = req.params;
   const foundcriminal = await Criminal.findById(id);
-  res.render("criminal/gallery/upload-section/upload-video", { foundcriminal });
+  res.render("crime-related-app-main/criminal/gallery/upload-section/upload-video", { foundcriminal });
 });
 
 
@@ -738,7 +738,7 @@ app.get("/criminal/gallery/upload/video/:id", async (req, res) => {
 app.get("/criminal/gallery/upload/image/:id", async (req, res) => {
   const { id } = req.params;
   const foundcriminal = await Criminal.findById(id);
-  res.render("criminal/gallery/upload-section/upload-image", { foundcriminal });
+  res.render("crime-related-app-main/criminal/gallery/upload-section/upload-image", { foundcriminal });
 });
 
 
@@ -747,7 +747,7 @@ app.get("/criminal/gallery/upload/image/:id", async (req, res) => {
 app.get("/criminal/gallery/explore/:id", async (req, res) => {
   const { id } = req.params;
   const foundcriminal = await Criminal.findById(id);
-  res.render("criminal/gallery/explore-section/explore", { foundcriminal });
+  res.render("crime-related-app-main/criminal/gallery/explore-section/explore", { foundcriminal });
 });
 
 
@@ -756,7 +756,7 @@ app.get("/criminal/gallery/explore/:id", async (req, res) => {
 app.get("/criminal/gallery/explore/video/:id", async (req, res) => {
   const { id } = req.params;
   const foundcriminal = await Criminal.findById(id);
-  res.render("criminal/gallery/explore-section/explore-video", { foundcriminal });
+  res.render("crime-related-app-main/criminal/gallery/explore-section/explore-video", { foundcriminal });
 });
 
 
@@ -765,7 +765,7 @@ app.get("/criminal/gallery/explore/video/:id", async (req, res) => {
 app.get("/criminal/gallery/explore/image/:id", async (req, res) => {
   const { id } = req.params;
   const foundcriminal = await Criminal.findById(id);
-  res.render("criminal/gallery/explore-section/explore-image", { foundcriminal });
+  res.render("crime-related-app-main/criminal/gallery/explore-section/explore-image", { foundcriminal });
 });
 
 
@@ -774,7 +774,7 @@ app.get("/criminal/gallery/explore/image/:id", async (req, res) => {
 app.post('/submit-interrogation-video/:id', upload.single('file'), async (req, res) => {
   const { id } = req.params;
   console.log('Request params:', req.params);  // Check if id is here
-  const filePath = path.join(__dirname, 'public/uploads/', req.file.filename);
+  const filePath = path.join(__dirname, 'app-main/public/uploads/', req.file.filename);
   const mimeType = req.file.mimetype;
 
   try {
@@ -823,7 +823,7 @@ app.post('/submit-interrogation-video/:id', upload.single('file'), async (req, r
 
       fs.unlinkSync(filePath);
 
-      res.render('criminal/gallery/explore-section/explore', { Criminal_Interrogation_Video_Download_URL, Criminal_Interrogation_Video_View_URL, foundcriminal  });
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Interrogation_Video_Download_URL, Criminal_Interrogation_Video_View_URL, foundcriminal  });
   } 
   
   catch (error) {

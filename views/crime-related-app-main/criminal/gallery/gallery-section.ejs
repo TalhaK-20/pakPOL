@@ -4,16 +4,16 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pakPOL | Upload Section</title>
+    <title>pakPOL | Gallery Section</title>
 
-    <link rel="icon" href="/gallery/ICONS/favicon.png" type="image/x-icon">
+    <link rel="icon" href="/app-main/gallery/ICONS/favicon.png" type="image/x-icon">
 
     <!-- bootstrap css -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/app-main/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style_2.css" />
+    <link rel="stylesheet" href="/app-main/css/style_2.css" />
 
   <style>
     
@@ -71,27 +71,27 @@
 </head>
   
   <body>
+ 
+    <%- include("../../partials/navbar.ejs") %>
 
-    <%- include("../../../partials/navbar-gallery.ejs") %>
-
-    <h3 style="top: 43px; text-align: center; position: relative; left: -1%;"><u>Files Uploading Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
+    <h3 style="top: 43px; text-align: center; position: relative; left: -1%;"><u>Gallery Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
     <div class="container">
 
       <div class="flex-box">
-        <a href="/criminal/gallery/upload/image/<%= foundcriminal.id %>">
+        <a href="/criminal/gallery/upload/<%= foundcriminal.id %>">
           <!-- <img src="/ICONS/criminal.png" alt="criminal"> -->
-          <span>Image Section</span>
+          <span>Upload Section</span>
         </a>
       </div>
       
       <div class="flex-box">
-        <a href="/criminal/gallery/upload/video/<%= foundcriminal.id %>">
+        <a href="/criminal/gallery/explore/<%= foundcriminal.id %>">
           <!-- <img src="/ICONS/criminal alias.png" alt="criminal alias"> -->
-          <span>Video Section</span>
+          <span>Explore Section</span>
         </a>
       </div>
 
-    <script src="/js/bootstrap.min.js"></script>
+    <script src="/app-main/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

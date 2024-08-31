@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pakPOL | Upload Video</title>
+    <title>pakPOL | Explore Video</title>
 
-    <link rel="icon" href="/gallery/ICONS/favicon.png" type="image/x-icon">
+    <link rel="icon" href="/app-main/gallery/ICONS/favicon.png" type="image/x-icon">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
@@ -14,11 +14,11 @@
     <!-- Custom CSS -->
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #e9ecef;
             font-family: 'Arial', sans-serif;
             color: #333;
         }
-
+        
         .container {
             display: flex;
             flex-direction: column;
@@ -30,7 +30,6 @@
             font-size: 24px;
             color: #343a40;
             margin-bottom: 30px;
-            text-align: center;
             transition: color 0.3s ease;
         }
 
@@ -39,60 +38,75 @@
             cursor: pointer;
         }
 
-        form {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 600px;
+        .info-box {
             width: 100%;
-            margin-top: 20px;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-align: center;
         }
 
-        h6 {
+        .info-box:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 24px rgba(92, 255, 141, 0.2);
+        }
+
+        .info-box .card-body {
+            padding: 20px;
+        }
+
+        .info-box h5 {
             font-size: 20px;
             color: #343a40;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .info-box p {
+            font-size: 16px;
+            color: #495057;
             margin-bottom: 20px;
         }
 
-        input[type="file"] {
-            margin-bottom: 20px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            padding: 8px;
-            width: calc(100% - 16px);
-            box-sizing: border-box;
-        }
-
-        .submit-btn {
+        .btn-custom {
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             padding: 12px 20px;
             font-size: 16px;
-            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
             transition: background-color 0.3s ease, transform 0.3s ease;
-            width: 100%;
+            margin: 10px;
+            text-align: center;
         }
 
-        .submit-btn:hover {
-            background-color: #0056b3;
-            transform: scale(1.02);
+        .btn-custom:hover {
+            background-color: #16a637;
+            transform: scale(1.05);
+            text-decoration: none;
+            color: white;
         }
 
-        .submit-btn:active {
-            background-color: #004494;
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
         }
     </style>
 </head>
+
 <body>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="height: 82px; background-color: #ebf5ff !important;">
 
 
-    <a class="navbar-brand" href="/home"><img src="../../../../gallery/ICONS/logo.png" alt="Logo" style="position: relative; left: 2%; top: 10px; height: 100px; width: 100px;"><p></p></a>
+    <a class="navbar-brand" href="/home"><img src="../../../../app-main/gallery/ICONS/logo.png" alt="Logo" style="position: relative; left: 2%; top: 10px; height: 100px; width: 100px;"><p></p></a>
   
   
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -165,18 +179,23 @@
   
 </nav>
   
+
     <div class="container">
-
-      <h3><u>Video Uploading Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
-
-        <form id="assignmentForm" action="/submit-interrogation-video/<%= foundcriminal.id %>" method="POST" enctype="multipart/form-data">
-
-            <h6>Interrogation Video</h6>
-            <input type="hidden" name="foundcriminal" value="<%= foundcriminal.id %>">
-            <input type="file" name="file" accept="*/*" required>
-  
-            <button type="submit" class="submit-btn">Upload</button>
-        </form>
+        <h3 class="text-center"><u>Video Exploring Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
+        
+        <div class="info-box">
+            <div class="card-body">
+                
+                <h5 class="card-title">Interrogation Video</h5>
+                <div class="btn-container">
+                    
+                  <a href="<%= foundcriminal.Criminal_Interrogation_Video_Download_URL %>" class="btn-custom" target="_blank">Download the File</a>
+                    
+                  <a href="<%= foundcriminal.Criminal_Interrogation_Video_View_URL %>" class="btn-custom" target="_blank">View the File</a>
+                
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -186,4 +205,3 @@
 
 </body>
 </html>
-
