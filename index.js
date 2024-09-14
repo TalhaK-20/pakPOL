@@ -591,7 +591,7 @@ fs.unlinkSync(localFilePath);
 const similarityThreshold = 1.0;
 
 
-// Euclidean Distance calculation
+// Euclidean Distance Calculation
 function euclideanDistance(vector1, vector2) {
     let sum = 0;
     for (let i = 0; i < vector1.length; i++) {
