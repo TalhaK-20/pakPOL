@@ -11,7 +11,6 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     
-    <!-- Custom CSS -->
     <style>
         body {
             background-color: #f8f9fa;
@@ -86,6 +85,7 @@
             background-color: #004494;
         }
     </style>
+
 </head>
 <body>
 
@@ -108,7 +108,7 @@
       </ul>
   
   
-      <div class="dropdown">
+      <!-- <div class="dropdown">
   
         <button class="btn btn-outline-light dropdown-toggle" type="button" id="searchDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #afafaf">
         Search
@@ -148,10 +148,10 @@
               <label for="searchRank">Search by Rank</label>
               <input type="text" class="form-control" id="searchRank" name="searchRank" placeholder="Enter a rank">
             
-            </div>
+            </div> -->
   
   
-            <button type="submit" class="btn btn-primary">Search</button>
+            <!-- <button type="submit" class="btn btn-primary">Search</button> -->
   
           </form>
   
@@ -169,15 +169,51 @@
 
       <h3><u>Video Uploading Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
 
+        
+      
+      
         <form id="assignmentForm" action="/submit-interrogation-video/<%= foundcriminal.id %>" method="POST" enctype="multipart/form-data">
 
             <h6>Interrogation Video</h6>
+            
+            <b style="font-size: 12px;">Previous Video Uploaded On</b>
+            <p style="font-size: 12px;"><%= foundcriminal.Criminal_Interrogation_Video_Uploading_Date %></p>
+          
+            <a href="<%= foundcriminal.Criminal_Interrogation_Video_View_URL %>" class="btn-custom" target="_blank">Previous Video 🔗</a>
+            
+            <br>
+            <br>
+
             <input type="hidden" name="foundcriminal" value="<%= foundcriminal.id %>">
             <input type="file" name="file" accept="*/*" required>
   
             <button type="submit" class="submit-btn">Upload</button>
         </form>
+
+
+
+
+        <form id="assignmentForm" action="/submit-confession-video/<%= foundcriminal.id %>" method="POST" enctype="multipart/form-data">
+
+          <h6>Confession Video</h6>
+          
+          <b style="font-size: 12px;">Previous Video Uploaded On</b>
+          <p style="font-size: 12px;"><%= foundcriminal.Criminal_Confession_Video_Uploading_Date %></p>
+        
+          <a href="<%= foundcriminal.Criminal_Confession_Video_View_URL %>" class="btn-custom" target="_blank">Previous Video 🔗</a>
+          
+          <br>
+          <br>
+
+          <input type="hidden" name="foundcriminal" value="<%= foundcriminal.id %>">
+          <input type="file" name="file" accept="*/*" required>
+
+          <button type="submit" class="submit-btn">Upload</button>
+      </form>
+
+
     </div>
+
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

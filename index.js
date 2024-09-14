@@ -6,6 +6,9 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const fs = require('fs');
 const { google } = require('googleapis');
+const axios = require('axios');
+
+
 
 
 const helmet = require('helmet');
@@ -18,6 +21,8 @@ app.use(helmet.contentSecurityPolicy({
 }));
 
 
+
+
 // Very Important to display Images from DRIVE
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "frame-src 'self' https://drive.google.com");
@@ -25,13 +30,17 @@ app.use((req, res, next) => {
 });
 
 
+
+
 // -------------------- For Local Storage --------------------
+
+
 
 
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "app-main/public/uploads/");
+    cb(null, "public/app-main/uploads/");
   },
   
   filename: (req, file, cb) => {
@@ -44,7 +53,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
+
+
 // -------------------- Automated Emails --------------------
+
+
 
 
 const nodemailer = require('nodemailer');
@@ -401,10 +414,36 @@ app.get('/logout', (req, res) => {
 // -------------------- CRIMINAL'S SECTION --------------------
 
 
+
+
+// Download Image From Drive ----> Function
+
+async function downloadImageFromDrive(fileId, destPath) {
+  const drive = google.drive({ version: 'v3', auth });
+  const dest = fs.createWriteStream(destPath);
+
+  await new Promise((resolve, reject) => {
+      drive.files.get({ fileId: fileId, alt: 'media' }, { responseType: 'stream' },
+      (err, res) => {
+          if (err) {
+              return reject(err);
+          }
+          res.data
+              .on('end', resolve)
+              .on('error', reject)
+              .pipe(dest);
+      });
+  });
+}
+
+
+
+
 // Display all criminal ---> index.ejs
 app.get("/criminal",async (req,res)=>{
+  const { filterType, filterDate, filterGender, filterDangerous } = req.query;
   const criminal = await Criminal.find({})
-  res.render("crime-related-app-main/criminal/index",{criminal})
+  res.render("crime-related-app-main/criminal/index",{criminal, filterType, filterDate, filterGender, filterDangerous})
 })
 
 
@@ -434,7 +473,8 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
     Criminal_Published,
     Criminal_Image_URL } = req.body;
 
-    const filePath = path.join(__dirname, 'app-main/public/uploads/', req.file.filename);
+    const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+
     const mimeType = req.file.mimetype;
 
     const response = await drive.files.create({
@@ -460,6 +500,45 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
   });
 
   const fileUrl = `https://drive.google.com/thumbnail?id=${fileId}`;
+
+
+// ******************************************************************
+
+
+// Download the image from Google Drive for face embedding extraction
+
+const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+
+try {
+    await downloadImageFromDrive(fileId, localFilePath);
+} 
+
+catch (error) {
+    console.error('Error downloading image from Google Drive:', error);
+    return res.status(500).send('Error downloading image from Google Drive.');
+}
+
+
+let faceEmbedding = [];
+
+try {
+    const embeddingResponse = await axios.post('http://127.0.0.1:5001/extract-embedding', {
+        image_path: localFilePath
+    });
+
+    faceEmbedding = embeddingResponse.data.embedding;
+} 
+
+catch (error) {
+    console.error('Error extracting face embedding:', error.response.data);
+    return res.status(500).send('Error extracting face embedding.');
+}
+
+
+// ******************************************************************
+
+
+fs.unlinkSync(localFilePath);
 
 
   async function getNextCriminalId() {
@@ -488,7 +567,9 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
     filename: req.file.originalname,
     mimeType: mimeType,
     googleDriveId: fileId,
-    fileUrl: fileUrl
+    fileUrl: fileUrl,
+
+    face_embedding: faceEmbedding
   };
 
   const criminal = new Criminal(newCriminal);
@@ -498,6 +579,183 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
 
   res.redirect("/criminal");
 
+});
+
+
+
+
+// -------------------- Face Detection Based Search --------------------
+
+
+// Threshold for similarity (0.6 is a good start; adjust based on tests)
+const similarityThreshold = 1.0;
+
+
+// Euclidean Distance calculation
+function euclideanDistance(vector1, vector2) {
+    let sum = 0;
+    for (let i = 0; i < vector1.length; i++) {
+        sum += (vector1[i] - vector2[i]) ** 2;
+    }
+    return Math.sqrt(sum);
+}
+
+
+
+
+app.get('/search-criminal', (req, res) => {
+  res.render('app-main/ai-Search', { results: null });
+});
+
+
+
+
+app.post("/search-criminal", upload.single('file'), async (req, res) => {
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+
+  const response = await drive.files.create({
+      requestBody: {
+          name: req.file.originalname,
+          mimeType: req.file.mimetype,
+      },
+      media: {
+          mimeType: req.file.mimetype,
+          body: fs.createReadStream(filePath),
+      },
+  });
+
+  const fileId = response.data.id;
+  const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+
+  try {
+      await downloadImageFromDrive(fileId, localFilePath);
+  } 
+  
+  catch (error) {
+      console.error('Error downloading image from Google Drive:', error);
+      return res.status(500).send('Error downloading image from Google Drive');
+  }
+
+  let queryEmbedding;
+  
+  try {
+      const embeddingResponse = await axios.post('http://127.0.0.1:5001/extract-embedding', {
+          image_path: localFilePath,
+          enforce_detection: true
+      });
+      
+      queryEmbedding = embeddingResponse.data.embedding;
+  } 
+  
+  catch (error) {
+      console.error('Error extracting face embedding:', error.response.data);
+      return res.status(500).send('Error extracting face embedding.');
+  }
+
+  fs.unlinkSync(localFilePath);
+
+  const criminals = await Criminal.find({});
+  const matches = criminals.filter(criminal => {
+      const dbEmbedding = criminal.face_embedding;
+      const distance = euclideanDistance(queryEmbedding, dbEmbedding);
+      return distance < similarityThreshold;
+  });
+
+  res.render('app-main/ai-search', { results: matches });
+});
+
+
+
+
+// -------------------- Fingerprint Pattern Based Search --------------------
+
+
+app.get('/search-criminal-fingerprint', (req, res) => {
+  res.render('app-main/fingerprint-Search', { results: null });
+});
+
+
+
+
+const math = require('mathjs');
+
+function euclideanDistance(vecA, vecB) {
+  if (vecA.length !== vecB.length) {
+      throw new Error('Feature length mismatch between query and database');
+  }
+  
+  const diff = vecA.map((val, idx) => val - vecB[idx]);
+  const sumOfSquares = diff.reduce((sum, val) => sum + val * val, 0);
+  return Math.sqrt(sumOfSquares);
+}
+
+
+
+
+app.post("/search-criminal-fingerprint", upload.single('file'), async (req, res) => {
+    const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+
+    const response = await drive.files.create({
+        requestBody: {
+            name: req.file.originalname,
+            mimeType: req.file.mimetype,
+        },
+        media: {
+            mimeType: req.file.mimetype,
+            body: fs.createReadStream(filePath),
+        },
+    });
+
+    const fileId = response.data.id;
+    const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+
+    try {
+        await downloadImageFromDrive(fileId, localFilePath);
+    } 
+    
+    catch (error) {
+        console.error('Error downloading image from Google Drive:', error);
+        return res.status(500).send('Error downloading image from Google Drive.');
+    }
+
+    let queryFeatures;
+    try {
+        const featureResponse = await axios.post('http://127.0.0.1:5002/extract-fingerprint-features', {
+            image_path: localFilePath,
+            enforce_detection: true
+        });
+        
+        queryFeatures = featureResponse.data.features;
+    } 
+    
+    catch (error) {
+        console.error('Error extracting fingerprint features:', error.response.data);
+        return res.status(500).send('Error extracting fingerprint features.');
+    }
+
+    fs.unlinkSync(localFilePath);
+
+    const criminals = await Criminal.find({});
+    const validCriminals = criminals.filter(criminal => {
+        const features = criminal.Criminal_Fingerprint_Image_1_Embedding;
+        return features && features.length > 0;
+    });
+
+
+    const matches = validCriminals.filter(criminal => {
+        const dbFeatures = criminal.Criminal_Fingerprint_Image_1_Embedding;
+        
+        if (dbFeatures.length !== queryFeatures.length) {
+            console.warn(`Feature length mismatch: Query features have shape (${queryFeatures.length}), but database feature at index ${index} has shape (${dbFeatures.length})`);
+            
+            return false;
+        }
+
+        const distance = euclideanDistance(queryFeatures, dbFeatures);
+        return distance < similarityThreshold;
+    });
+    
+    res.render('app-main/fingerprint-search', { results: matches });
 });
 
 
@@ -573,7 +831,7 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
   };
 
   if (req.file) {
-    const filePath = path.join(__dirname, 'app-main/public/uploads/', req.file.filename);
+    const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
     
     const mimeType = req.file.mimetype;
 
@@ -606,7 +864,6 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
     updatedCriminal = {
       ...updatedCriminal,
       Criminal_Image: fileUrl,
-      // Criminal_Image_URL: fileUrl,
       filename: req.file.originalname,
       mimeType: mimeType,
       googleDriveId: fileId,
@@ -620,7 +877,6 @@ app.patch("/criminal/:id", upload.single("Criminal_Image"), async (req, res) => 
     updatedCriminal = {
       ...updatedCriminal,
       Criminal_Image: existingCriminal.Criminal_Image,
-      // Criminal_Image_URL: existingCriminal.Criminal_Image_URL,
       filename: existingCriminal.filename,
       mimeType: existingCriminal.mimeType,
       googleDriveId: existingCriminal.googleDriveId,
@@ -649,37 +905,77 @@ app.delete("/criminal/:id",async (req,res)=>{
 
 // Searching in Criminal portion
 app.get("/search", async (req, res) => {
-  const { searchName, searchType, searchId, searchRank } = req.query;
 
-  try{
-    const criminal_results = await Criminal.find({ Criminal_Name: { $regex: searchName, $options: 'i' } });
+  const { searchName, searchType, searchId, searchRank, searchCrime } = req.query;
 
-    const crime_results = await Crime.find({ Crime_Id: { $eq: searchId }, Crime_Type: { $regex: searchType, $options: 'i' } });
+  try {
+    const searchNameRegex = searchName ? { $regex: searchName, $options: 'i' } : null;
+    
+    const searchCrimeRegex = searchCrime ? { $regex: searchCrime, $options: 'i' } : null;
+    
+    const searchTypeRegex = searchType ? { $regex: searchType, $options: 'i' } : null;
+    
+    const searchRankRegex = searchRank ? { $regex: searchRank, $options: 'i' } : null;
+    
+    const criminal_results = searchNameRegex 
+      ? await Criminal.find({ Criminal_Name: searchNameRegex })
+      : [];
+    
+    const criminal_crime_results = searchCrimeRegex 
+      ? await Criminal.find({ Criminal_Crime: searchCrimeRegex }) 
+      : [];
 
-    const officer_results = await Officer.find({ Officer_Name: { $regex: searchName, $options: 'i' }, Officer_Rank: { $regex: searchRank, $options: 'i' } });
+    const crime_results = searchId 
+      ? await Crime.find({ Crime_Id: searchId, Crime_Type: searchTypeRegex || undefined })
+      : [];
 
-    const criminalalias_results = await Criminal_Alias.find({ Criminal_Alias_Name: { $regex: searchName, $options: 'i' } });
+    const officer_results = searchNameRegex 
+      ? await Officer.find({ Officer_Name: searchNameRegex, Officer_Rank: searchRankRegex || undefined })
+      : [];
 
-    const investigation_results = await Investigation.find({ Investigation_Id: { $eq: searchId } });
+    const criminalalias_results = searchNameRegex 
+      ? await Criminal_Alias.find({ Criminal_Alias_Name: searchNameRegex })
+      : [];
 
-    const witness_results = await Witness.find({ Witness_Name: { $regex: searchName, $options: 'i' } });
+    const investigation_results = searchId 
+      ? await Investigation.find({ Investigation_Id: searchId })
+      : [];
 
-    const suspect_results = await Suspect.find({ Suspect_Name: { $regex: searchName, $options: 'i' } });
+    const witness_results = searchNameRegex 
+      ? await Witness.find({ Witness_Name: searchNameRegex })
+      : [];
 
-    const jail_results = await Jail.find({ Jail_Name: { $regex: searchName, $options: 'i' } });
+    const suspect_results = searchNameRegex 
+      ? await Suspect.find({ Suspect_Name: searchNameRegex })
+      : [];
 
-    const sentence_results = await Sentence.find({ Sentence_Id: { $eq: searchId } });
+    const jail_results = searchNameRegex 
+      ? await Jail.find({ Jail_Name: searchNameRegex })
+      : [];
 
-    const victim_results = await Victim.find({ Victim_Name: { $regex: searchName, $options: 'i' } });
+    const sentence_results = searchId 
+      ? await Sentence.find({ Sentence_Id: searchId })
+      : [];
 
-    const case_results = await Cases.find({ Case_Name: { $regex: searchName, $options: 'i' }, Case_Id: { $eq: searchId } });
+    const victim_results = searchNameRegex 
+      ? await Victim.find({ Victim_Name: searchNameRegex })
+      : [];
 
-    const arrest_results = await Arrest.find({ Arrest_Id: searchId });
+    const case_results = searchId 
+      ? await Cases.find({ Case_Name: searchNameRegex || undefined, Case_Id: searchId })
+      : [];
 
-    const evidence_results = await Evidence.find({ Evidence_Type: { $regex: searchId, $options: 'i' }, Evidence_Id: { $eq: searchId } });
+    const arrest_results = searchId 
+      ? await Arrest.find({ Arrest_Id: searchId })
+      : [];
+
+    const evidence_results = searchId 
+      ? await Evidence.find({ Evidence_Type: searchTypeRegex || undefined, Evidence_Id: searchId })
+      : [];
 
     const results = [
       ...criminal_results,
+      ...criminal_crime_results,
       ...officer_results,
       ...witness_results,
       ...criminalalias_results,
@@ -698,7 +994,7 @@ app.get("/search", async (req, res) => {
 
   } 
   
-  catch(error){
+  catch (error) {
     console.error(error);
     res.status(500).send("An error occurred while searching.");
   }
@@ -706,6 +1002,15 @@ app.get("/search", async (req, res) => {
 });
 
 
+
+
+
+
+
+
+
+
+// -------------------- CRIMINAL'S GALLERY SECTION --------------------
 
 
 app.get("/criminal/gallery/:id", async (req, res) => {
@@ -772,9 +1077,12 @@ app.get("/criminal/gallery/explore/image/:id", async (req, res) => {
 
 
 app.post('/submit-interrogation-video/:id', upload.single('file'), async (req, res) => {
+  
   const { id } = req.params;
-  console.log('Request params:', req.params);  // Check if id is here
-  const filePath = path.join(__dirname, 'app-main/public/uploads/', req.file.filename);
+  console.log('Request params:', req.params);
+  
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+  
   const mimeType = req.file.mimetype;
 
   try {
@@ -815,21 +1123,733 @@ app.post('/submit-interrogation-video/:id', upload.single('file'), async (req, r
 
       Criminal_Interrogation_Video_View_URL = fileUrl;
 
+      Criminal_Interrogation_Video_Uploading_Date = Date.now();
+
       foundcriminal.Criminal_Interrogation_Video_Download_URL = fileDownloadUrl;
 
       foundcriminal.Criminal_Interrogation_Video_View_URL = fileUrl;
+
+      foundcriminal.Criminal_Interrogation_Video_Uploading_Date = Date.now();
 
       await foundcriminal.save();
 
       fs.unlinkSync(filePath);
 
-      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Interrogation_Video_Download_URL, Criminal_Interrogation_Video_View_URL, foundcriminal  });
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Interrogation_Video_Download_URL, Criminal_Interrogation_Video_View_URL, Criminal_Interrogation_Video_Uploading_Date, foundcriminal });
   } 
   
   catch (error) {
       console.log('Error:', error);
       res.status(500).json({ message: 'Error submitting assignment', error });
   }
+});
+
+
+
+
+app.post('/submit-confession-video/:id', upload.single('file'), async (req, res) => {
+  
+  const { id } = req.params;
+  console.log('Request params:', req.params);
+  
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+  
+  const mimeType = req.file.mimetype;
+
+  try {
+    console.log('Searching for Criminal ID:', id);
+
+      const foundcriminal = await Criminal.findById(id);
+      if (!foundcriminal) {
+          return res.status(404).json({ message: 'Criminal not found' });
+      }
+
+      const response = await drive.files.create({
+          requestBody: {
+              name: req.file.originalname,
+              mimeType: mimeType,
+          },
+      
+          media: {
+              mimeType: mimeType,
+              body: fs.createReadStream(filePath),
+          },
+      });
+
+      const fileId = response.data.id;
+
+      await drive.permissions.create({
+          fileId: fileId,
+          requestBody: {
+              role: 'reader',
+              type: 'anyone',
+          },
+      });
+
+      const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
+
+      const fileDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+      Criminal_Confession_Video_Download_URL = fileDownloadUrl;
+
+      Criminal_Confession_Video_View_URL = fileUrl;
+
+      Criminal_Confession_Video_Uploading_Date = Date.now();
+
+      foundcriminal.Criminal_Confession_Video_Download_URL = fileDownloadUrl;
+
+      foundcriminal.Criminal_Confession_Video_View_URL = fileUrl;
+
+      foundcriminal.Criminal_Confession_Video_Uploading_Date = Date.now();
+
+      await foundcriminal.save();
+
+      fs.unlinkSync(filePath);
+
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Confession_Video_Download_URL, Criminal_Confession_Video_View_URL, Criminal_Confession_Video_Uploading_Date, foundcriminal });
+  } 
+  
+  catch (error) {
+      console.log('Error:', error);
+      res.status(500).json({ message: 'Error submitting assignment', error });
+  }
+});
+
+
+
+
+app.post('/submit-old-image-1/:id', upload.single('file'), async (req, res) => {
+  
+  const { id } = req.params;
+  console.log('Request params:', req.params);
+  
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+  
+  const mimeType = req.file.mimetype;
+
+  try {
+    console.log('Searching for Criminal ID:', id);
+
+      const foundcriminal = await Criminal.findById(id);
+      if (!foundcriminal) {
+          return res.status(404).json({ message: 'Criminal not found' });
+      }
+
+      const response = await drive.files.create({
+          requestBody: {
+              name: req.file.originalname,
+              mimeType: mimeType,
+          },
+      
+          media: {
+              mimeType: mimeType,
+              body: fs.createReadStream(filePath),
+          },
+      });
+
+      const fileId = response.data.id;
+
+      await drive.permissions.create({
+          fileId: fileId,
+          requestBody: {
+              role: 'reader',
+              type: 'anyone',
+          },
+      });
+
+      const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
+
+      const fileDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+
+
+
+// ****************************************************************
+
+// Download the image from Google Drive for face embedding extraction
+const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+
+try {
+    await downloadImageFromDrive(fileId, localFilePath);
+} 
+
+catch (error) {
+    console.error('Error downloading image from Google Drive:', error);
+    return res.status(500).send('Error downloading image from Google Drive.');
+}
+
+let faceEmbedding = [];
+
+try {
+    const embeddingResponse = await axios.post('http://127.0.0.1:5001/extract-embedding', {
+        image_path: localFilePath
+    });
+    
+    faceEmbedding = embeddingResponse.data.embedding;
+} 
+
+catch (error) {
+    console.error('Error extracting face embedding:', error.response.data);
+    return res.status(500).send('Error extracting face embedding.');
+}
+
+fs.unlinkSync(localFilePath);
+
+// ****************************************************************
+
+      Criminal_Old_Image_1_Download_URL = fileDownloadUrl;
+
+      Criminal_Old_Image_1_View_URL = fileUrl;
+      
+      Criminal_Old_Image_1_Face_Embedding = faceEmbedding;
+
+      Criminal_Old_Image_1_Uploading_Date = Date.now();
+
+      foundcriminal.Criminal_Old_Image_1_Download_URL = fileDownloadUrl;
+
+      foundcriminal.Criminal_Old_Image_1_View_URL = fileUrl;
+
+      foundcriminal.Criminal_Old_Image_1_Face_Embedding = faceEmbedding
+
+      foundcriminal.Criminal_Old_Image_1_Uploading_Date = Date.now();
+
+      await foundcriminal.save();
+
+      fs.unlinkSync(filePath);
+
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Old_Image_1_Download_URL, Criminal_Old_Image_1_View_URL, Criminal_Old_Image_1_Uploading_Date, foundcriminal, Criminal_Old_Image_1_Face_Embedding });
+  } 
+  
+  catch (error) {
+      console.log('Error:', error);
+      res.status(500).json({ message: 'Error submitting assignment', error });
+  }
+
+});
+
+
+
+
+app.post('/submit-old-image-2/:id', upload.single('file'), async (req, res) => {
+  
+  const { id } = req.params;
+  console.log('Request params:', req.params);
+  
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+  
+  const mimeType = req.file.mimetype;
+
+  try {
+    console.log('Searching for Criminal ID:', id);
+
+      const foundcriminal = await Criminal.findById(id);
+      if (!foundcriminal) {
+          return res.status(404).json({ message: 'Criminal not found' });
+      }
+
+      const response = await drive.files.create({
+          requestBody: {
+              name: req.file.originalname,
+              mimeType: mimeType,
+          },
+      
+          media: {
+              mimeType: mimeType,
+              body: fs.createReadStream(filePath),
+          },
+      });
+
+      const fileId = response.data.id;
+
+      await drive.permissions.create({
+          fileId: fileId,
+          requestBody: {
+              role: 'reader',
+              type: 'anyone',
+          },
+      });
+
+      const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
+
+      const fileDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+
+
+
+// ****************************************************************
+
+// Download the image from Google Drive for face embedding extraction
+const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+
+try {
+    await downloadImageFromDrive(fileId, localFilePath);
+} 
+
+catch (error) {
+    console.error('Error downloading image from Google Drive:', error);
+    return res.status(500).send('Error downloading image from Google Drive.');
+}
+
+let faceEmbedding = [];
+
+try {
+    const embeddingResponse = await axios.post('http://127.0.0.1:5001/extract-embedding', {
+        image_path: localFilePath
+    });
+    
+    faceEmbedding = embeddingResponse.data.embedding;
+} 
+
+catch (error) {
+    console.error('Error extracting face embedding:', error.response.data);
+    return res.status(500).send('Error extracting face embedding.');
+}
+
+fs.unlinkSync(localFilePath);
+
+// ****************************************************************
+
+      Criminal_Old_Image_2_Download_URL = fileDownloadUrl;
+
+      Criminal_Old_Image_2_View_URL = fileUrl;
+
+      Criminal_Old_Image_2_Face_Embedding = faceEmbedding;
+
+      Criminal_Old_Image_2_Uploading_Date = Date.now();
+
+      foundcriminal.Criminal_Old_Image_2_Download_URL = fileDownloadUrl;
+
+      foundcriminal.Criminal_Old_Image_2_View_URL = fileUrl;
+
+      foundcriminal.Criminal_Old_Image_2_Face_Embedding = faceEmbedding;
+
+      foundcriminal.Criminal_Old_Image_2_Uploading_Date = Date.now();
+
+      await foundcriminal.save();
+
+      fs.unlinkSync(filePath);
+
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Old_Image_2_Download_URL, Criminal_Old_Image_2_View_URL, Criminal_Old_Image_2_Uploading_Date,  foundcriminal, Criminal_Old_Image_2_Face_Embedding });
+  } 
+  
+  catch (error) {
+      console.log('Error:', error);
+      res.status(500).json({ message: 'Error submitting assignment', error });
+  }
+
+});
+
+
+
+
+app.post('/submit-latest-image-1/:id', upload.single('file'), async (req, res) => {
+  
+  const { id } = req.params;
+  console.log('Request params:', req.params);
+
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+  
+  const mimeType = req.file.mimetype;
+
+  try {
+    console.log('Searching for Criminal ID:', id);
+
+      const foundcriminal = await Criminal.findById(id);
+      if (!foundcriminal) {
+          return res.status(404).json({ message: 'Criminal not found' });
+      }
+
+      const response = await drive.files.create({
+          requestBody: {
+              name: req.file.originalname,
+              mimeType: mimeType,
+          },
+      
+          media: {
+              mimeType: mimeType,
+              body: fs.createReadStream(filePath),
+          },
+      });
+
+      const fileId = response.data.id;
+
+      await drive.permissions.create({
+          fileId: fileId,
+          requestBody: {
+              role: 'reader',
+              type: 'anyone',
+          },
+      });
+
+      const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
+
+      const fileDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+
+
+
+// ****************************************************************
+
+// Download the image from Google Drive for face embedding extraction
+const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+
+try {
+    await downloadImageFromDrive(fileId, localFilePath);
+} 
+
+catch (error) {
+    console.error('Error downloading image from Google Drive:', error);
+    return res.status(500).send('Error downloading image from Google Drive.');
+}
+
+let faceEmbedding = [];
+
+try {
+    const embeddingResponse = await axios.post('http://127.0.0.1:5001/extract-embedding', {
+        image_path: localFilePath  // Path to the downloaded image
+    });
+    
+    faceEmbedding = embeddingResponse.data.embedding; // Extracted embedding
+} 
+
+catch (error) {
+    console.error('Error extracting face embedding:', error.response.data);
+    return res.status(500).send('Error extracting face embedding.');
+}
+
+fs.unlinkSync(localFilePath);
+
+// ****************************************************************
+
+      Criminal_Latest_Image_1_Download_URL = fileDownloadUrl;
+
+      Criminal_Latest_Image_1_View_URL = fileUrl;
+
+      Criminal_Latest_Image_1_Face_Embedding = faceEmbedding;
+
+      Criminal_Latest_Image_1_Uploading_Date = Date.now();
+
+      foundcriminal.Criminal_Latest_Image_1_Download_URL = fileDownloadUrl;
+
+      foundcriminal.Criminal_Latest_Image_1_View_URL = fileUrl;
+
+      foundcriminal.Criminal_Latest_Image_1_Face_Embedding = faceEmbedding;
+
+      foundcriminal.Criminal_Latest_Image_1_Uploading_Date = Date.now();
+
+      await foundcriminal.save();
+
+      fs.unlinkSync(filePath);
+
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Latest_Image_1_Download_URL, Criminal_Latest_Image_1_View_URL, Criminal_Latest_Image_1_Uploading_Date, foundcriminal, Criminal_Latest_Image_1_Face_Embedding });
+  } 
+  
+  catch (error) {
+      console.log('Error:', error);
+      res.status(500).json({ message: 'Error submitting assignment', error });
+  }
+
+});
+
+
+
+
+app.post('/submit-latest-image-2/:id', upload.single('file'), async (req, res) => {
+  
+  const { id } = req.params;
+  console.log('Request params:', req.params);
+
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+  
+  const mimeType = req.file.mimetype;
+
+  try {
+    console.log('Searching for Criminal ID:', id);
+
+      const foundcriminal = await Criminal.findById(id);
+      if (!foundcriminal) {
+          return res.status(404).json({ message: 'Criminal not found' });
+      }
+
+      const response = await drive.files.create({
+          requestBody: {
+              name: req.file.originalname,
+              mimeType: mimeType,
+          },
+      
+          media: {
+              mimeType: mimeType,
+              body: fs.createReadStream(filePath),
+          },
+      });
+
+      const fileId = response.data.id;
+
+      await drive.permissions.create({
+          fileId: fileId,
+          requestBody: {
+              role: 'reader',
+              type: 'anyone',
+          },
+      });
+
+      const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
+
+      const fileDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+
+// ****************************************************************
+
+// Download the image from Google Drive for face embedding extraction
+const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+
+try {
+    await downloadImageFromDrive(fileId, localFilePath);
+} 
+
+catch (error) {
+    console.error('Error downloading image from Google Drive:', error);
+    return res.status(500).send('Error downloading image from Google Drive.');
+}
+
+let faceEmbedding = [];
+
+try {
+    const embeddingResponse = await axios.post('http://127.0.0.1:5001/extract-embedding', {
+        image_path: localFilePath
+    });
+    
+    faceEmbedding = embeddingResponse.data.embedding;
+} 
+
+catch (error) {
+    console.error('Error extracting face embedding:', error.response.data);
+    return res.status(500).send('Error extracting face embedding.');
+}
+
+fs.unlinkSync(localFilePath);
+
+// ****************************************************************
+
+      Criminal_Latest_Image_2_Download_URL = fileDownloadUrl;
+
+      Criminal_Latest_Image_2_View_URL = fileUrl;
+
+      Criminal_Latest_Image_2_Face_Embedding = faceEmbedding;
+
+      Criminal_Latest_Image_2_Uploading_Date = Date.now();
+
+      foundcriminal.Criminal_Latest_Image_2_Download_URL = fileDownloadUrl;
+
+      foundcriminal.Criminal_Latest_Image_2_View_URL = fileUrl;
+
+      foundcriminal.Criminal_Latest_Image_2_Face_Embedding = faceEmbedding;
+
+      foundcriminal.Criminal_Latest_Image_2_Uploading_Date = Date.now();
+
+      await foundcriminal.save();
+
+      fs.unlinkSync(filePath);
+
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Latest_Image_2_Download_URL, Criminal_Latest_Image_2_View_URL, Criminal_Latest_Image_2_Uploading_Date, foundcriminal, Criminal_Latest_Image_2_Face_Embedding });
+  } 
+
+  catch (error) {
+      console.log('Error:', error);
+      res.status(500).json({ message: 'Error submitting assignment', error });
+  }
+
+});
+
+
+
+
+app.post('/submit-fingerprint-image-1/:id', upload.single('file'), async (req, res) => {
+  
+  const { id } = req.params;
+  console.log('Request params:', req.params);
+  
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+  
+  const mimeType = req.file.mimetype;
+
+  try {
+    console.log('Searching for Criminal ID:', id);
+
+      const foundcriminal = await Criminal.findById(id);
+      if (!foundcriminal) {
+          return res.status(404).json({ message: 'Criminal not found' });
+      }
+
+      const response = await drive.files.create({
+          requestBody: {
+              name: req.file.originalname,
+              mimeType: mimeType,
+          },
+      
+          media: {
+              mimeType: mimeType,
+              body: fs.createReadStream(filePath),
+          },
+      });
+
+      const fileId = response.data.id;
+
+      await drive.permissions.create({
+          fileId: fileId,
+          requestBody: {
+              role: 'reader',
+              type: 'anyone',
+          },
+      });
+
+      const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
+
+      const fileDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+
+
+
+// ****************************************************************
+      
+const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+    
+      try {
+          await downloadImageFromDrive(fileId, localFilePath);
+      } 
+      
+      catch (error) {
+          console.error('Error downloading image from Google Drive:', error);
+          return res.status(500).send('Error downloading image from Google Drive.');
+      }
+    
+      let queryFeatures;
+      
+      try {
+          const featureResponse = await axios.post('http://127.0.0.1:5002/extract-fingerprint-features', {
+              image_path: localFilePath
+          });
+          
+          queryFeatures = featureResponse.data.features;
+      } 
+      
+      catch (error) {
+          console.error('Error extracting fingerprint features:', error.response.data);
+          return res.status(500).send('Error extracting fingerprint features.');
+      }
+    
+      fs.unlinkSync(localFilePath);
+
+// ****************************************************************
+
+      Criminal_Fingerprint_Image_1_Download_URL = fileDownloadUrl;
+
+      Criminal_Fingerprint_Image_1_View_URL = fileUrl;
+
+      Criminal_Fingerprint_Image_1_Embedding = queryFeatures;
+
+      Criminal_Fingerprint_Image_1_Uploading_Date = Date.now();
+
+      foundcriminal.Criminal_Fingerprint_Image_1_Download_URL = fileDownloadUrl;
+
+      foundcriminal.Criminal_Fingerprint_Image_1_View_URL = fileUrl;
+
+      foundcriminal.Criminal_Fingerprint_Image_1_Embedding = queryFeatures;
+
+      foundcriminal.Criminal_Fingerprint_Image_1_Uploading_Date = Date.now();
+
+      await foundcriminal.save();
+
+      fs.unlinkSync(filePath);
+
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Fingerprint_Image_1_Download_URL, Criminal_Fingerprint_Image_1_View_URL, Criminal_Fingerprint_Image_1_Uploading_Date, foundcriminal, Criminal_Fingerprint_Image_1_Embedding });
+  } 
+  
+  catch (error) {
+      console.log('Error:', error);
+      res.status(500).json({ message: 'Error submitting assignment', error });
+  }
+
+});
+
+
+
+
+app.get("/criminals", async (req, res) => {
+  
+  const { filterType, filterDate, filterGender, filterDangerous } = req.query;
+
+  let filterCriteria = {};
+
+    if (filterType) {
+      const words = filterType.split(' ').map(word => word.trim()).filter(word => word.length > 0);
+
+      if (words.length > 0) {
+        filterCriteria.Criminal_Crime = {
+          $regex: words.join('|'),  // Use regex OR to match any word
+          $options: 'i'  // Case insensitive
+        };
+
+      }
+
+    }
+
+  if (filterDate) {
+    const now = new Date();
+    let startDate;
+    
+    switch (filterDate) {
+      
+      case "today":
+        startDate = new Date(now.setHours(0, 0, 0, 0));
+        break;
+      
+      case "yesterday":
+        startDate = new Date(now.setDate(now.getDate() - 1));
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      
+      case "last_week":
+        startDate = new Date(now.setDate(now.getDate() - 7));
+        break;
+      
+      case "last_month":
+        startDate = new Date(now.setMonth(now.getMonth() - 1));
+        break;
+      
+      case "last_year":
+        startDate = new Date(now.setFullYear(now.getFullYear() - 1));
+        break;
+      
+      default:
+        startDate = null;
+    }
+
+    if (startDate) {
+      filterCriteria.Criminal_Published = { $gte: startDate };
+    }
+
+  }
+
+  if (filterGender) {
+    filterCriteria.Criminal_Gender = filterGender;
+  }
+
+  if (filterDangerous) {
+    filterCriteria.Criminal_StateOfCase = { $regex: filterDangerous, $options: 'i' };
+  }
+
+  try {
+    const criminals = await Criminal.find(filterCriteria);
+    
+    res.render("crime-related-app-main/criminal/index", { criminal: criminals, filterType, filterDate, filterGender, filterCriteria, filterDangerous });
+  } 
+  
+  catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred while retrieving the records.");
+  }
+
 });
 
 

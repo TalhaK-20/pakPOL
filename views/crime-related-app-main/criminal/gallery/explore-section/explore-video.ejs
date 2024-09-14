@@ -98,7 +98,12 @@
             justify-content: center;
             flex-wrap: wrap;
         }
+
+        hr {
+          width: 80%;
+        }
     </style>
+
 </head>
 
 <body>
@@ -122,7 +127,7 @@
       </ul>
   
   
-      <div class="dropdown">
+      <!-- <div class="dropdown">
   
         <button class="btn btn-outline-light dropdown-toggle" type="button" id="searchDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #afafaf">
         Search
@@ -162,10 +167,10 @@
               <label for="searchRank">Search by Rank</label>
               <input type="text" class="form-control" id="searchRank" name="searchRank" placeholder="Enter a rank">
             
-            </div>
+            </div> -->
   
   
-            <button type="submit" class="btn btn-primary">Search</button>
+            <!-- <button type="submit" class="btn btn-primary">Search</button> -->
   
           </form>
   
@@ -184,9 +189,13 @@
         <h3 class="text-center"><u>Video Exploring Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
         
         <div class="info-box">
+            
             <div class="card-body">
                 
                 <h5 class="card-title">Interrogation Video</h5>
+                <b style="font-size: 12px;">Video Uploaded On</b>
+                <p style="font-size: 12px;"><%= foundcriminal.Criminal_Interrogation_Video_Uploading_Date %></p>
+
                 <div class="btn-container">
                     
                   <a href="<%= foundcriminal.Criminal_Interrogation_Video_Download_URL %>" class="btn-custom" target="_blank">Download the File</a>
@@ -194,6 +203,27 @@
                   <a href="<%= foundcriminal.Criminal_Interrogation_Video_View_URL %>" class="btn-custom" target="_blank">View the File</a>
                 
                 </div>
+
+                 <hr> 
+
+                
+                
+                
+                
+                
+                <div class="card-body">
+                
+                  <h5 class="card-title">Confession Video</h5>
+                  <b style="font-size: 12px;">Video Uploaded On</b>
+                  <p style="font-size: 12px;"><%= foundcriminal.Criminal_confession_Video_Uploading_Date %></p>
+  
+                  <div class="btn-container">
+                      
+                    <a href="<%= foundcriminal.Criminal_confession_Video_Download_URL %>" class="btn-custom" target="_blank">Download the File</a>
+                      
+                    <a href="<%= foundcriminal.Criminal_Confession_Video_View_URL %>" class="btn-custom" target="_blank">View the File</a>
+                  
+                  </div>
             </div>
         </div>
     </div>

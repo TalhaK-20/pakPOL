@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pakPOL | Fingerprint Search</title>
+    
+    <link rel="icon" href="./app-main/gallery/ICONS/favicon.png" type="image/x-icon">
+
+</head>
+<body>
+
+    <h1>Search Criminal by Fingerprint Images</h1>
+
+    <form action="/search-criminal-fingerprint" method="POST" enctype="multipart/form-data">
+        <label for="image">Upload an image to search:</label>
+        <input type="file" name="file" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <% if (results && results.length > 0) { %>
+        <h2>Matching Criminals:</h2>
+        <ul>
+            
+            <% results.forEach(criminal => { %>
+                <li>
+                    <p>Name: <%= criminal.Criminal_Name %></p>
+                    <p>CNIC: <%= criminal.CNIC %></p>
+                    <p>Crime: <%= criminal.Criminal_Crime %></p>
+                    <p><img src="<%= criminal.Criminal_Image %>" alt="Criminal Image" style="width: 100px; height: auto;"></p>
+                </li>
+            <% }) %>
+
+        </ul>
+
+    <% } 
+    
+    else if (typeof results !== 'undefined') { %>
+        <p>No matching criminals found.</p>
+    <% } %>
+
+</body>
+</html>

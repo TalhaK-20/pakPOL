@@ -141,19 +141,98 @@ const criminalSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  face_embedding: {
+    type: [Number],
+    required: true
+  },
+
 
   CNIC: String,
+
 
   filename: String,
   mimeType: String,
   googleDriveId: String,
   fileUrl: String,
 
+
+  Criminal_Old_Image_1_Uploading_Date: {
+    type: Date,
+    default: null
+  },
+
+  Criminal_Old_Image_1_Face_Embedding: {
+    type: [Number],
+  },
+  
+  Criminal_Old_Image_2_Uploading_Date: {
+    type: Date,
+    default: null
+  },
+
+  Criminal_Old_Image_2_Face_Embedding: {
+    type: [Number],
+  },  
+
+  Criminal_Latest_Image_1_Uploading_Date: {
+    type: Date,
+    default: null
+  },
+
+  Criminal_Latest_Image_1_Face_Embedding: {
+    type: [Number],
+  },
+
+  Criminal_Latest_Image_2_Uploading_Date: {
+    type: Date,
+    default: null
+  },
+
+  Criminal_Old_Image_2_Face_Embedding: {
+    type: [Number],
+  },
+
+  Criminal_Fingerprint_Image_1_Embedding: {
+    type: [Number],
+    required: false
+  },
+
+  Criminal_Fingerprint_Image_1_Uploading_Date: {
+    type: Date,
+    default: null
+  },
+
+  Criminal_Interrogation_Video_Uploading_Date: {
+    type: Date,
+    default: null
+  },
+
+  Criminal_Confession_Video_Uploading_Date: {
+    type: Date,
+    default: null
+  },
+
   Criminal_Interrogation_Video_Download_URL: String,
   Criminal_Interrogation_Video_View_URL: String,
 
   Criminal_Confession_Video_Download_URL: String,
   Criminal_Confession_Video_View_URL: String,
+
+  Criminal_Old_Image_1_Download_URL: String,
+  Criminal_Old_Image_1_View_URL: String,
+
+  Criminal_Old_Image_2_Download_URL: String,
+  Criminal_Old_Image_2_View_URL: String,
+
+  Criminal_Latest_Image_1_Download_URL: String,
+  Criminal_Latest_Image_1_View_URL: String,
+
+  Criminal_Latest_Image_2_Download_URL: String,
+  Criminal_Latest_Image_2_View_URL: String,
+
+  Criminal_Fingerprint_Image_1_Download_URL: String,
+  Criminal_Fingerprint_Image_1_View_URL: String,
+
 });
 
 
@@ -553,3 +632,4 @@ Investigation.find()
   .catch(error => {
     console.error('Error:', error);
   });
+

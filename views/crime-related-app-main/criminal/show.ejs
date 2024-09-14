@@ -210,7 +210,6 @@
             
             <a href="/criminal/<%= foundcriminal.id %>/edit" class="btn btn-success">Edit</a>
             
-            
             <form action="/criminal/<%= foundcriminal.id %>?_method=delete" method="post" style="display: inline-block">
                 <button class="btn btn-danger">Delete</button>
             </form>  
@@ -231,13 +230,15 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
     
-    <script>
-        $(document).ready(function() {
-            $('.btn-danger').on('click', function(e) {
-                e.preventDefault();
-                $('#confirmDeleteModal').modal('show');
-            });
+    <!-- <script>
+          $(document).ready(function() {
+        $('.btn-danger').on('click', function(e) {
+            e.preventDefault();
+            var formAction = $(this).closest('form').attr('action');
+            $('#deleteForm').attr('action', formAction);
+            $('#confirmDeleteModal').modal('show');
         });
+    });
     </script>
     
     
@@ -261,13 +262,14 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     
-                    <form id="deleteForm" action="" method="post">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
+                    <form action="/criminal/<%= foundcriminal.id %>?_method=delete" method="post" style="display: inline-block">
+                      <button class="btn btn-danger">Delete</button>
+                  </form>  
+                
                     
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </body>
 </html>

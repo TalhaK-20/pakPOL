@@ -135,6 +135,98 @@
     <div class="container">
       <h2><u>All Criminal Records</u></h2>
 
+      <form id="filterForm" action="/criminals" method="GET">
+        <div class="row">
+          <div class="col-md-3">
+            
+            <label for="filterType">Criminal Type</label>
+            
+            <select id="filterType" name="filterType" class="form-control">
+              <option value="">All</option>
+              
+              <option value="serial killer" <%= filterType === 'serial killer' ? 'selected' : '' %>>Serial Killers</option>
+              
+              <option value="robber" <%= filterType === 'robber' ? 'selected' : '' %>>Robbers</option>
+              
+              <option value="murder" <%= filterType === 'murder' ? 'selected' : '' %>>Murderers</option>
+              
+              <option value="molester" <%= filterType === 'molester' ? 'selected' : '' %>>Molesters</option>
+              
+              <!-- Add more types as needed -->
+            </select>
+
+          </div>
+      
+          
+          <div class="col-md-3">
+            <label for="filterDate">Date Added</label>
+            
+            <select id="filterDate" name="filterDate" class="form-control">
+              
+              <option value="">All</option>
+              
+              <option value="today" <%= filterDate === 'today' ? 'selected' : '' %>>Today</option>
+              
+              <option value="yesterday" <%= filterDate === 'yesterday' ? 'selected' : '' %>>Yesterday</option>
+              
+              <option value="last_week" <%= filterDate === 'last_week' ? 'selected' : '' %>>Last Week</option>
+              
+              <option value="last_month" <%= filterDate === 'last_month' ? 'selected' : '' %>>Last Month</option>
+              
+              <option value="last_year" <%= filterDate === 'last_year' ? 'selected' : '' %>>Last Year</option>
+
+            </select>
+
+          </div>
+      
+          
+          <div class="col-md-3">
+            <label for="filterGender">Gender</label>
+            
+            <select id="filterGender" name="filterGender" class="form-control">
+              
+              <option value="">All</option>
+              
+              <option value="Male" <%= filterGender === 'Male' ? 'selected' : '' %>>Male</option>
+              
+              <option value="Female" <%= filterGender === 'Female' ? 'selected' : '' %>>Female</option>
+              
+              <!-- Add more gender options if applicable -->
+
+            </select>
+
+          </div>
+      
+          
+          <div class="col-md-3">
+            <label for="filterDangerous">Case Status</label>
+            
+            <select id="filterDangerous" name="filterDangerous" class="form-control">
+              
+              <option value="">All</option>
+              
+              <option value="Open" <%= filterDangerous === 'Open' ? 'selected' : '' %>>Open</option>
+              
+              <option value="Closed" <%= filterDangerous === 'Closed' ? 'selected' : '' %>>Closed</option>
+              
+              <!-- <option value="Dangerous" <%= filterDangerous === 'Dangerous' ? 'selected' : '' %>>Dangerous</option> -->
+              
+              <!-- Add more statuses if needed -->
+
+            </select>
+
+          </div>
+
+        </div>
+      
+        
+        <button type="submit" class="btn btn-danger mt-3">Apply Filters</button>
+
+      </form>
+      
+      </div>
+      
+    
       <div class="card-container">
         <% for(let x of criminal){ %>
           
@@ -159,9 +251,13 @@
     </div>
 
     <script src="/app-main/js/bootstrap.min.js"></script>
+    
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
   </body>
 </html>
 

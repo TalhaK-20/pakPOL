@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pakPOL | Explore Image</title>
+
+    <link rel="icon" href="/app-main/gallery/ICONS/favicon.png" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #e9ecef;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 24px;
+            color: #343a40;
+            margin-bottom: 30px;
+            transition: color 0.3s ease;
+        }
+
+        h3:hover {
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        .info-box {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .info-box:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 24px rgba(92, 255, 141, 0.2);
+        }
+
+        .info-box .card-body {
+            padding: 20px;
+        }
+
+        .info-box h5 {
+            font-size: 20px;
+            color: #343a40;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .info-box p {
+            font-size: 16px;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .btn-custom:hover {
+            background-color: #16a637;
+            transform: scale(1.05);
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        hr {
+          width: 80%;
+        }
+    </style>
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="height: 82px; background-color: #ebf5ff !important;">
+
+
+    <a class="navbar-brand" href="/home"><img src="../../../../app-main/gallery/ICONS/logo.png" alt="Logo" style="position: relative; left: 2%; top: 10px; height: 100px; width: 100px;"><p></p></a>
+  
+  
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+  
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item active">
+          <a class="nav-link home-link" href="/home" style="color: rgb(110, 108, 108);"><b>Home</b></a>
+        </li>
+      </ul>
+  
+  
+      <!-- <div class="dropdown">
+  
+        <button class="btn btn-outline-light dropdown-toggle" type="button" id="searchDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #afafaf">
+        Search
+        </button>
+  
+  
+        <div class="dropdown-menu dropdown-menu-lg-right" aria-labelledby="searchDropdown">
+  
+  
+          <form class="px-4 py-3" action="/search" method="get">
+            <div class="form-group">
+  
+              <label for="searchName">Search by Name</label>
+              <input type="text" class="form-control" id="searchName" name="searchName" placeholder="Enter a name">
+  
+            </div>
+  
+  
+            <div class="form-group">
+  
+              <label for="searchId">Search by ID</label>
+              <input type="text" class="form-control" id="searchId" name="searchId" placeholder="Enter an ID">
+  
+            </div>
+  
+  
+            <div class="form-group">
+            
+              <label for="searchType">Search by Type</label>
+              <input type="text" class="form-control" id="searchType" name="searchType" placeholder="Enter a type">
+            
+            </div>
+  
+  
+            <div class="form-group">
+            
+              <label for="searchRank">Search by Rank</label>
+              <input type="text" class="form-control" id="searchRank" name="searchRank" placeholder="Enter a rank">
+            
+            </div> -->
+  
+  
+            <!-- <button type="submit" class="btn btn-primary">Search</button> -->
+  
+          </form>
+  
+        </div>
+        
+        <a class="btn btn-outline-light ml-2" href="/logout" style="background-color: #afafaf">Log Out</a>
+      
+      </div>
+    
+    </div>
+  
+</nav>
+  
+
+    <div class="container">
+        <h3 class="text-center"><u>Image Exploring Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
+        
+        <div class="info-box">
+            
+            <div class="card-body">
+                
+                <h5 class="card-title">Old Image (1)</h5>
+                
+                <b style="font-size: 12px;">Image Uploaded On</b>
+                <p style="font-size: 12px;"><%= foundcriminal.Criminal_Old_Image_1_Uploading_Date %></p>
+                <div class="btn-container">
+                    
+                  <a href="<%= foundcriminal.Criminal_Old_Image_1_Download_URL %>" class="btn-custom" target="_blank">Download the File</a>
+                    
+                  <a href="<%= foundcriminal.Criminal_Old_Image_1_View_URL %>" class="btn-custom" target="_blank">View the File</a>
+                
+                </div>
+
+              </div>
+
+
+              <hr>
+
+
+
+
+
+
+              <div class="card-body">    
+                
+                <h5 class="card-title">Old Image (2)</h5>
+
+                <b style="font-size: 12px;">Image Uploaded On</b>
+                <p style="font-size: 12px;"><%= foundcriminal.Criminal_Old_Image_2_Uploading_Date %></p>
+                <div class="btn-container">
+                    
+                  <a href="<%= foundcriminal.Criminal_Old_Image_2_Download_URL %>" class="btn-custom" target="_blank">Download the File</a>
+                    
+                  <a href="<%= foundcriminal.Criminal_Old_Image_2_View_URL %>" class="btn-custom" target="_blank">View the File</a>
+              
+                </div>
+                
+
+                <hr>
+
+
+
+
+
+
+              <div class="card-body">    
+                
+                <h5 class="card-title">Latest Image (1)</h5>
+
+                <b style="font-size: 12px;">Image Uploaded On</b>
+                <p style="font-size: 12px;"><%= foundcriminal.Criminal_Latest_Image_1_Uploading_Date %></p>
+                <div class="btn-container">
+                    
+                  <a href="<%= foundcriminal.Criminal_Latest_Image_1_Download_URL %>" class="btn-custom" target="_blank">Download the File</a>
+                    
+                  <a href="<%= foundcriminal.Criminal_Latest_Image_1_View_URL %>" class="btn-custom" target="_blank">View the File</a>
+              
+                </div>
+
+                
+                <hr>
+
+
+
+
+
+
+              <div class="card-body">    
+                
+                <h5 class="card-title">Latest Image (2)</h5>
+
+                <b style="font-size: 12px;">Image Uploaded On</b>
+                <p style="font-size: 12px;"><%= foundcriminal.Criminal_Latest_Image_2_Uploading_Date %></p>
+                <div class="btn-container">
+                    
+                  <a href="<%= foundcriminal.Criminal_Latest_Image_2_Download_URL %>" class="btn-custom" target="_blank">Download the File</a>
+                    
+                  <a href="<%= foundcriminal.Criminal_Latest_Image_2_View_URL %>" class="btn-custom" target="_blank">View the File</a>
+              
+                </div>
+                
+
+                <hr>
+
+
+
+
+
+
+              <div class="card-body">    
+                
+                <h5 class="card-title">Fingerprint Image (1)</h5>
+
+                <b style="font-size: 12px;">Image Uploaded On</b>
+                <p style="font-size: 12px;"><%= foundcriminal.Criminal_Fingerprint_Image_1_Uploading_Date %></p>
+                <div class="btn-container">
+                    
+                  <a href="<%= foundcriminal.Criminal_Fingerprint_Image_1_Download_URL %>" class="btn-custom" target="_blank">Download the File</a>
+                    
+                  <a href="<%= foundcriminal.Criminal_Fingerprint_Image_1_View_URL %>" class="btn-custom" target="_blank">View the File</a>
+              
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
