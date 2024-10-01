@@ -86,6 +86,21 @@ const crimeSchema = new mongoose.Schema({
 
 
 
+const MinutiaeSchema = new mongoose.Schema({
+  type: {
+      type: String,
+      enum: ['ending', 'bifurcation'],
+      required: true
+  },
+  position: {
+      type: [Number],
+      required: true
+  }
+});
+
+
+
+
 const criminalSchema = new mongoose.Schema({
   Criminal_Id: {
     type: Number,
@@ -191,6 +206,8 @@ const criminalSchema = new mongoose.Schema({
   Criminal_Old_Image_2_Face_Embedding: {
     type: [Number],
   },
+
+  Criminal_Fingerprint_Image_1_Minutiae: [MinutiaeSchema],
 
   Criminal_Fingerprint_Image_1_Embedding: {
     type: [Number],
@@ -632,4 +649,3 @@ Investigation.find()
   .catch(error => {
     console.error('Error:', error);
   });
-

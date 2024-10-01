@@ -592,7 +592,7 @@ const similarityThreshold = 1.0;
 
 
 // Euclidean Distance Calculation
-function euclideanDistance(vector1, vector2) {
+function euclideanDistanceFace(vector1, vector2) {
     let sum = 0;
     for (let i = 0; i < vector1.length; i++) {
         sum += (vector1[i] - vector2[i]) ** 2;
@@ -603,14 +603,14 @@ function euclideanDistance(vector1, vector2) {
 
 
 
-app.get('/search-criminal', (req, res) => {
-  res.render('app-main/ai-Search', { results: null });
+app.get('/advanced-face-recognition-search', (req, res) => {
+  res.render('app-main/face-search', { results: null });
 });
 
 
 
 
-app.post("/search-criminal", upload.single('file'), async (req, res) => {
+app.post("/advanced-face-recognition-search", upload.single('file'), async (req, res) => {
   const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
 
   const response = await drive.files.create({
@@ -618,38 +618,75 @@ app.post("/search-criminal", upload.single('file'), async (req, res) => {
           name: req.file.originalname,
           mimeType: req.file.mimetype,
       },
+      
       media: {
           mimeType: req.file.mimetype,
           body: fs.createReadStream(filePath),
       },
   });
 
+
   const fileId = response.data.id;
   const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
 
   try {
-      await downloadImageFromDrive(fileId, localFilePath);
+    await downloadImageFromDrive(fileId, localFilePath);
   } 
   
   catch (error) {
       console.error('Error downloading image from Google Drive:', error);
-      return res.status(500).send('Error downloading image from Google Drive');
+      fs.unlinkSync(localFilePath);
+      
+      return res.render('app-main/error-face-recognition', {
+          message: 'Error downloading image from Google Drive. There may be network issues or internal errors.'
+      
+      });
+  }
+
+  let faceDetectionResponse;
+  
+  try {
+      faceDetectionResponse = await axios.post('http://127.0.0.1:5000/detect-face', {
+          image_path: localFilePath
+      });
+
+      const faceCount = faceDetectionResponse.data.face_count;
+
+      if (faceCount === 0) {
+          fs.unlinkSync(localFilePath);
+          return res.render('app-main/error-face-recognition', {
+              message: 'No face detected in the uploaded image. Please upload an image with a clear face.'
+          });
+      }
+  } 
+  
+  catch (error) {
+      console.error('Error detecting face:', error.response?.data || error.message);
+      
+      fs.unlinkSync(localFilePath);
+      return res.render('app-main/error-face-recognition', {
+          message: 'Error detecting face. There may be network issues or internal server errors.'
+      });
   }
 
   let queryEmbedding;
-  
+
   try {
-      const embeddingResponse = await axios.post('http://127.0.0.1:5001/extract-embedding', {
+      const embeddingResponse = await axios.post('http://127.0.0.1:5000/extract-embedding', {
           image_path: localFilePath,
           enforce_detection: true
       });
-      
+
       queryEmbedding = embeddingResponse.data.embedding;
   } 
   
   catch (error) {
-      console.error('Error extracting face embedding:', error.response.data);
-      return res.status(500).send('Error extracting face embedding.');
+      console.error('Error extracting face embedding:', error.response?.data || error.message);
+      fs.unlinkSync(localFilePath);
+      
+      return res.render('app-main/error-face-recognition', {
+          message: 'Error extracting face embedding. May be the face in the image is not clear or some network connectivity problem exist'
+      });
   }
 
   fs.unlinkSync(localFilePath);
@@ -657,11 +694,12 @@ app.post("/search-criminal", upload.single('file'), async (req, res) => {
   const criminals = await Criminal.find({});
   const matches = criminals.filter(criminal => {
       const dbEmbedding = criminal.face_embedding;
-      const distance = euclideanDistance(queryEmbedding, dbEmbedding);
+      const distance = euclideanDistanceFace(queryEmbedding, dbEmbedding);
       return distance < similarityThreshold;
   });
 
-  res.render('app-main/ai-search', { results: matches });
+  res.render('app-main/face-search', { results: matches });
+
 });
 
 
@@ -670,15 +708,14 @@ app.post("/search-criminal", upload.single('file'), async (req, res) => {
 // -------------------- Fingerprint Pattern Based Search --------------------
 
 
-app.get('/search-criminal-fingerprint', (req, res) => {
-  res.render('app-main/fingerprint-Search', { results: null });
+app.get('/advanced-fingerprint-recognition-search', (req, res) => {
+  res.render('app-main/fingerprint-search', { results: null });
 });
 
 
 
 
 const math = require('mathjs');
-
 function euclideanDistance(vecA, vecB) {
   if (vecA.length !== vecB.length) {
       throw new Error('Feature length mismatch between query and database');
@@ -692,70 +729,120 @@ function euclideanDistance(vecA, vecB) {
 
 
 
-app.post("/search-criminal-fingerprint", upload.single('file'), async (req, res) => {
-    const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+function compareMinutiae(minutiae1, minutiae2, similarityThreshold = 10.0) {
+  if (minutiae1.length === 0 || minutiae2.length === 0) return false;
 
-    const response = await drive.files.create({
-        requestBody: {
-            name: req.file.originalname,
-            mimeType: req.file.mimetype,
-        },
-        media: {
-            mimeType: req.file.mimetype,
-            body: fs.createReadStream(filePath),
-        },
-    });
+  let matchCount = 0;
 
-    const fileId = response.data.id;
-    const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+  minutiae1.forEach(m1 => {
+      minutiae2.forEach(m2 => {
+          if (m1.type === m2.type) {
+              const distance = Math.sqrt(
+                  Math.pow(m1.position[0] - m2.position[0], 2) +
+                  Math.pow(m1.position[1] - m2.position[1], 2)
+              );
 
-    try {
-        await downloadImageFromDrive(fileId, localFilePath);
-    } 
-    
-    catch (error) {
-        console.error('Error downloading image from Google Drive:', error);
-        return res.status(500).send('Error downloading image from Google Drive.');
-    }
+              // Optional: Consider orientation differences
+              // const orientationDiff = Math.abs(m1.orientation - m2.orientation);
+              // if (distance < similarityThreshold && orientationDiff < orientationThreshold) {
 
-    let queryFeatures;
-    try {
-        const featureResponse = await axios.post('http://127.0.0.1:5002/extract-fingerprint-features', {
-            image_path: localFilePath,
-            enforce_detection: true
-        });
-        
-        queryFeatures = featureResponse.data.features;
-    } 
-    
-    catch (error) {
-        console.error('Error extracting fingerprint features:', error.response.data);
-        return res.status(500).send('Error extracting fingerprint features.');
-    }
+              if (distance < similarityThreshold) {
+                  matchCount++;
+              }
+          }
+      });
+  });
 
-    fs.unlinkSync(localFilePath);
-
-    const criminals = await Criminal.find({});
-    const validCriminals = criminals.filter(criminal => {
-        const features = criminal.Criminal_Fingerprint_Image_1_Embedding;
-        return features && features.length > 0;
-    });
+  const requiredMatches = Math.floor(0.4 * minutiae1.length);
+  return matchCount >= requiredMatches;
+}
 
 
-    const matches = validCriminals.filter(criminal => {
-        const dbFeatures = criminal.Criminal_Fingerprint_Image_1_Embedding;
-        
-        if (dbFeatures.length !== queryFeatures.length) {
-            console.warn(`Feature length mismatch: Query features have shape (${queryFeatures.length}), but database feature at index ${index} has shape (${dbFeatures.length})`);
-            
-            return false;
-        }
 
-        const distance = euclideanDistance(queryFeatures, dbFeatures);
-        return distance < similarityThreshold;
-    });
-    
-    res.render('app-main/fingerprint-search', { results: matches });
+
+app.post("/advanced-fingerprint-recognition-search", upload.single('file'), async (req, res) => {
+  const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
+
+  let response;
+  
+  try {
+      response = await drive.files.create({
+          requestBody: {
+              name: req.file.originalname,
+              mimeType: req.file.mimetype,
+          },
+          
+          media: {
+              mimeType: req.file.mimetype,
+              body: fs.createReadStream(filePath),
+          },
+      });
+  } 
+  
+  catch (error) {
+      console.error('Error uploading file to Google Drive:', error);
+      return res.render('app-main/error-fingerprint-recognition', {
+          message: 'Error uploading file to Google Drive. Please try again later.'
+      });
+  }
+
+  const fileId = response.data.id;
+  const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
+
+  try {
+      await downloadImageFromDrive(fileId, localFilePath);
+  } 
+  
+  catch (error) {
+      console.error('Error downloading image from Google Drive:', error);
+      return res.render('app-main/error-fingerprint-recognition', {
+          message: 'Error downloading image from Google Drive. Please check your network connection.'
+      });
+  }
+
+  let queryMinutiae;
+  
+  try {
+      const featureResponse = await axios.post('http://127.0.0.1:5002/extract-fingerprint-features', {
+          image_path: localFilePath,
+          enforce_detection: true
+      });
+
+      queryMinutiae = featureResponse.data.minutiae;
+  } 
+  
+  catch (error) {
+      console.error('Error extracting fingerprint minutiae:', error.response?.data || error.message);
+      return res.render('app-main/error-fingerprint-recognition', {
+          message: 'Error extracting fingerprint minutiae. Please ensure the image is clear and try again.'
+      });
+  }
+
+  fs.unlinkSync(localFilePath);
+  fs.unlinkSync(filePath);
+
+  const criminals = await Criminal.find({});
+  const validCriminals = criminals.filter(criminal => {
+      const minutiae = criminal.Criminal_Fingerprint_Image_1_Minutiae;
+      return minutiae && minutiae.length > 0;
+  });
+
+  const similarityThreshold = 10.0;
+
+  const matches = validCriminals.filter(criminal => {
+      const dbMinutiae = criminal.Criminal_Fingerprint_Image_1_Minutiae;
+
+      return compareMinutiae(queryMinutiae, dbMinutiae, similarityThreshold);
+  });
+
+  if (matches.length === 0) {
+      return res.render('app-main/error-fingerprint-recognition', {
+          message: 'No matching fingerprints found. Please try with a different fingerprint image.'
+      });
+  }
+
+  res.render('app-main/fingerprint-search', { results: matches });
+
 });
 
 
@@ -1664,17 +1751,41 @@ fs.unlinkSync(localFilePath);
 
 
 
+function compareMinutiae(minutiae1, minutiae2, similarityThreshold = 10.0) {
+  if (minutiae1.length === 0 || minutiae2.length === 0) return false;
+
+  let matchCount = 0;
+
+  minutiae1.forEach(m1 => {
+      minutiae2.forEach(m2 => {
+          if (m1.type === m2.type) {
+              const distance = Math.sqrt(
+                  Math.pow(m1.position[0] - m2.position[0], 2) +
+                  Math.pow(m1.position[1] - m2.position[1], 2)
+              );
+              if (distance < similarityThreshold) {
+                  matchCount++;
+              }
+          }
+      });
+  });
+
+  const requiredMatches = Math.floor(0.4 * minutiae1.length);
+  return matchCount >= requiredMatches;
+}
+
+
+
+
 app.post('/submit-fingerprint-image-1/:id', upload.single('file'), async (req, res) => {
-  
   const { id } = req.params;
   console.log('Request params:', req.params);
-  
+
   const filePath = path.join(__dirname, 'public/app-main/uploads/', req.file.filename);
-  
   const mimeType = req.file.mimetype;
 
   try {
-    console.log('Searching for Criminal ID:', id);
+      console.log('Searching for Criminal ID:', id);
 
       const foundcriminal = await Criminal.findById(id);
       if (!foundcriminal) {
@@ -1686,7 +1797,7 @@ app.post('/submit-fingerprint-image-1/:id', upload.single('file'), async (req, r
               name: req.file.originalname,
               mimeType: mimeType,
           },
-      
+
           media: {
               mimeType: mimeType,
               body: fs.createReadStream(filePath),
@@ -1704,16 +1815,10 @@ app.post('/submit-fingerprint-image-1/:id', upload.single('file'), async (req, r
       });
 
       const fileUrl = `https://drive.google.com/file/d/${fileId}/view`;
-
       const fileDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
+      const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
 
-
-
-// ****************************************************************
-      
-const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
-    
       try {
           await downloadImageFromDrive(fileId, localFilePath);
       } 
@@ -1722,52 +1827,44 @@ const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.
           console.error('Error downloading image from Google Drive:', error);
           return res.status(500).send('Error downloading image from Google Drive.');
       }
-    
-      let queryFeatures;
+
+      let queryMinutiae;
       
       try {
           const featureResponse = await axios.post('http://127.0.0.1:5002/extract-fingerprint-features', {
               image_path: localFilePath
           });
-          
-          queryFeatures = featureResponse.data.features;
+
+          queryMinutiae = featureResponse.data.minutiae;
       } 
-      
+
       catch (error) {
-          console.error('Error extracting fingerprint features:', error.response.data);
-          return res.status(500).send('Error extracting fingerprint features.');
+          console.error('Error extracting fingerprint minutiae:', error.response?.data || error.message);
+          return res.status(500).send('Error extracting fingerprint minutiae. Please ensure the image is clear and try again.');
       }
-    
+
       fs.unlinkSync(localFilePath);
-
-// ****************************************************************
-
-      Criminal_Fingerprint_Image_1_Download_URL = fileDownloadUrl;
-
-      Criminal_Fingerprint_Image_1_View_URL = fileUrl;
-
-      Criminal_Fingerprint_Image_1_Embedding = queryFeatures;
-
-      Criminal_Fingerprint_Image_1_Uploading_Date = Date.now();
+      fs.unlinkSync(filePath);
 
       foundcriminal.Criminal_Fingerprint_Image_1_Download_URL = fileDownloadUrl;
-
       foundcriminal.Criminal_Fingerprint_Image_1_View_URL = fileUrl;
-
-      foundcriminal.Criminal_Fingerprint_Image_1_Embedding = queryFeatures;
-
+      foundcriminal.Criminal_Fingerprint_Image_1_Minutiae = queryMinutiae;
       foundcriminal.Criminal_Fingerprint_Image_1_Uploading_Date = Date.now();
 
       await foundcriminal.save();
 
-      fs.unlinkSync(filePath);
-
-      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', { Criminal_Fingerprint_Image_1_Download_URL, Criminal_Fingerprint_Image_1_View_URL, Criminal_Fingerprint_Image_1_Uploading_Date, foundcriminal, Criminal_Fingerprint_Image_1_Embedding });
+      res.render('crime-related-app-main/criminal/gallery/explore-section/explore', {
+          Criminal_Fingerprint_Image_1_Download_URL: fileDownloadUrl,
+          Criminal_Fingerprint_Image_1_View_URL: fileUrl,
+          Criminal_Fingerprint_Image_1_Uploading_Date: foundcriminal.Criminal_Fingerprint_Image_1_Uploading_Date,
+          foundcriminal,
+          Criminal_Fingerprint_Image_1_Minutiae: queryMinutiae
+      });
   } 
   
   catch (error) {
       console.log('Error:', error);
-      res.status(500).json({ message: 'Error submitting assignment', error });
+      res.status(500).json({ message: 'Error submitting fingerprint image', error });
   }
 
 });
@@ -1858,4 +1955,3 @@ app.get("/criminals", async (req, res) => {
 app.listen(port,() => {
   console.log(`Server listening at port ${port}`);
 })
-
