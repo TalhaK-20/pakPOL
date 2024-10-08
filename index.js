@@ -646,7 +646,7 @@ app.post("/advanced-face-recognition-search", upload.single('file'), async (req,
   let faceDetectionResponse;
   
   try {
-      faceDetectionResponse = await axios.post('http://127.0.0.1:5000/detect-face', {
+      faceDetectionResponse = await axios.post('https://pakpol-face-recognition-server.onrender.com/detect-face', {
           image_path: localFilePath
       });
 
@@ -672,7 +672,7 @@ app.post("/advanced-face-recognition-search", upload.single('file'), async (req,
   let queryEmbedding;
 
   try {
-      const embeddingResponse = await axios.post('http://127.0.0.1:5000/extract-embedding', {
+      const embeddingResponse = await axios.post('https://pakpol-face-recognition-server.onrender.com/extract-embedding', {
           image_path: localFilePath,
           enforce_detection: true
       });

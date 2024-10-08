@@ -45,7 +45,10 @@
             type="text"
             class="form-control"
             id="Criminal_Name"
-            name="Criminal_Name" required
+            name="Criminal_Name"
+            pattern="[A-Za-z\s]+" 
+            title="Only letters and spaces are allowed" 
+            required
           />
         </div>
         
@@ -56,7 +59,10 @@
             type="text"
             class="form-control"
             id="Criminal_WantedByCountry"
-            name="Criminal_WantedByCountry" required
+            name="Criminal_WantedByCountry"
+            pattern="[A-Za-z\s,()-]+" 
+            title="Only letters and spaces are allowed" 
+            required
           />
         </div>
         
@@ -67,7 +73,10 @@
             type="text"
             class="form-control"
             id="Criminal_Crime"
-            name="Criminal_Crime" required
+            name="Criminal_Crime"
+            pattern="[A-Za-z\s,()-]+" 
+            title="Only letters and spaces are allowed" 
+            required
           />
         </div>
         
@@ -89,7 +98,10 @@
             type="text"
             class="form-control"
             id="Criminal_Gender"
-            name="Criminal_Gender" required
+            name="Criminal_Gender"
+            pattern="[A-Za-z\s]+" 
+            title="Only letters and spaces are allowed" 
+            required
           />
         </div>
 
@@ -129,6 +141,8 @@
             class="form-control"
             id="Criminal_Nationality"
             name="Criminal_Nationality"
+            pattern="[A-Za-z\s,()-]+" 
+            title="Only letters and spaces are allowed"
           />
         </div>
         
@@ -140,6 +154,8 @@
             class="form-control"
             id="Criminal_SpokenLanguages"
             name="Criminal_SpokenLanguages"
+            pattern="[A-Za-z\s,()-]+" 
+            title="Only letters and spaces are allowed"
           />
         </div>
         
@@ -209,7 +225,20 @@
     
   </div>
 
-    
+
+  <script>
+    document.querySelector('form').addEventListener('submit', function (e) {
+      const nameField = document.getElementById('Criminal_Name');
+      const namePattern = /^[A-Za-z\s]+$/;
+      
+      if (!namePattern.test(nameField.value)) {
+        e.preventDefault();
+        alert('Only letters and spaces are allowed in the name.');
+        nameField.focus();
+      }
+    });
+  </script>
+
   <script src="/app-main/js/bootstrap.min.js"></script>
   
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -220,4 +249,3 @@
 
   </body>
 </html>
-
