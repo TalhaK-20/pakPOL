@@ -180,7 +180,7 @@
         <div class="card-container container">
             <% results.forEach(criminal => { %>
                 <div class="card">
-                    <img src="<%= criminal.Criminal_Image %>" alt="Criminal Image">
+                    <a href="/criminal/<%= criminal.id %>"><img src="<%= criminal.Criminal_Image %>" alt="Criminal Image" /></a>
                     <p><strong>Name:</strong> <%= criminal.Criminal_Name %></p>
                     <p><strong>CNIC:</strong> <%= criminal.CNIC %></p>
                     <p><strong>Crime:</strong> <%= criminal.Criminal_Crime %></p>
