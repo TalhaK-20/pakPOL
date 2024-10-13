@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const fs = require('fs');
 const { google } = require('googleapis');
 const axios = require('axios');
+const math = require('mathjs');
 
 
 
@@ -715,7 +716,6 @@ app.get('/advanced-fingerprint-recognition-search', (req, res) => {
 
 
 
-const math = require('mathjs');
 function euclideanDistance(vecA, vecB) {
   if (vecA.length !== vecB.length) {
       throw new Error('Feature length mismatch between query and database');
