@@ -1,101 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pakPOL | Gallery Section</title>
 
-    <link rel="icon" href="/app-main/gallery/ICONS/favicon.png" type="image/x-icon">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pakPOL | Gallery Section</title>
 
-    <!-- bootstrap css -->
-    <link rel="stylesheet" href="/app-main/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/app-main/css/style_2.css" />
+  <link rel="icon" href="/app-main/gallery/ICONS/favicon.png" type="image/x-icon">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/app-main/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/app-main/css/style_2.css" />
 
   <style>
-    
+    body {
+      background-color: #1e1e1e;
+      font-family: 'Roboto', sans-serif;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+
+    h3 {
+      font-size: 36px;
+      color: #ff2e2e;
+      text-align: center;
+      text-transform: uppercase;
+      margin-top: 40px;
+      letter-spacing: 1.5px;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+      position: relative;
+      z-index: 10;
+    }
+
     .container {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
+      flex-wrap: wrap;
+      padding: 50px;
       position: relative;
-      top: 114px;
+      top: 10px;
+      animation: fadeInContainer 1.2s ease-in-out forwards;
     }
 
     .flex-box {
-      width: 444px;
-      height: 330px;
-      margin: 14px;
+      width: 300px;
+      height: 200px;
+      margin: 20px;
+      background: linear-gradient(135deg, #ff4141 0%, #ff2e2e 100%);
+      border-radius: 12px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      background-color: #f0d2d2;
-      border-radius: 14px;
-    }
-    
-    h1{
-      font-size: 28px;
-      color: #333333;
-      margin-bottom: 20px;
-    }
-    
-    h2{
-      font-size: 18px;
-      color: #666666;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      transition: transform 0.5s ease, background 0.5s ease;
     }
 
-    .dropdown-menu.show{
-      display: block;
+    .flex-box:hover {
+      transform: translateY(-15px) scale(1.05);
+      box-shadow: 0 15px 45px rgba(255, 46, 46, 0.8);
+      background: linear-gradient(135deg, #ff1c1c 0%, #ff0000 100%);
+    }
+
+    .flex-box::before {
+      content: '';
       position: absolute;
-      left: -110px;
-      border-color: darkred;
-      border-radius: 15px;
-      opacity: 82%;
-    }
- 
-    .form-group label{
-      font-weight: bold;
-    }
-    
-    .flex-box span {
-      font-size: 28px;
-      font-weight: bold;
+      top: 0;
+      left: -75%;
+      width: 150%;
+      height: 150%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(45deg);
+      transition: all 0.7s ease;
     }
 
+    .flex-box:hover::before {
+      left: 100%;
+    }
+
+    .flex-box a {
+      text-decoration: none;
+      font-size: 24px;
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      z-index: 2;
+      letter-spacing: 2px;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+      transition: color 0.4s ease;
+    }
+
+    .flex-box a:hover {
+      color: #fffbd5;
+    }
+
+    .flex-box a span {
+      animation: pulseText 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseText {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes fadeInContainer {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      .flex-box {
+        width: 90%;
+      }
+
+      h3 {
+        font-size: 28px;
+      }
+    }
   </style>
-  
 </head>
-  
-  <body>
- 
-    <%- include("../../partials/navbar.ejs") %>
 
-    <h3 style="top: 43px; text-align: center; position: relative; left: -1%;"><u>Gallery Section of <b><%= foundcriminal.Criminal_Name %></b></u></h3>
+<body>
+  <!-- Navbar -->
+  <%- include("../../partials/navbar.ejs") %>
+
+    <!-- Header -->
+    <h3><u>Gallery Section of <b>
+          <%= foundcriminal.Criminal_Name %>
+        </b></u></h3>
+
+    <!-- Flexbox Container -->
     <div class="container">
-
+      <!-- Upload Section -->
       <div class="flex-box">
         <a href="/criminal/gallery/upload/<%= foundcriminal.id %>">
-          <!-- <img src="/ICONS/criminal.png" alt="criminal"> -->
           <span>Upload Section</span>
         </a>
       </div>
-      
+
+      <!-- Explore Section -->
       <div class="flex-box">
         <a href="/criminal/gallery/explore/<%= foundcriminal.id %>">
-          <!-- <img src="/ICONS/criminal alias.png" alt="criminal alias"> -->
           <span>Explore Section</span>
         </a>
       </div>
+    </div>
 
+    <!-- Bootstrap JS and jQuery -->
     <script src="/app-main/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
 
-  </body>
 </html>
-
