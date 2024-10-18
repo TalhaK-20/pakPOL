@@ -506,7 +506,7 @@ app.post("/criminal", upload.single('file'), async (req, res) => {
 // ******************************************************************
 
 
-// Download the image from Google Drive for face embedding extraction - Local Host Logic
+// Download the image from Google Drive for face embedding extraction - Local Host
 
 const localFilePath = path.join(__dirname, 'public/app-main/uploads/', req.file.originalname);
 
