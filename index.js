@@ -1884,7 +1884,7 @@ app.get("/criminals", async (req, res) => {
       if (words.length > 0) {
         filterCriteria.Criminal_Crime = {
           $regex: words.join('|'),  // Use regex OR to match any word
-          $options: 'i'  // Case insensitive
+          $options: 'i'  // Case Insensitive
         };
 
       }
