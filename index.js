@@ -417,7 +417,7 @@ app.get('/logout', (req, res) => {
 
 
 
-// Download Image from Drive ----> Function
+// Download Image From Drive ----> Function
 
 async function downloadImageFromDrive(fileId, destPath) {
   const drive = google.drive({ version: 'v3', auth });
