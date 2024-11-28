@@ -24,7 +24,7 @@ app.use(helmet.contentSecurityPolicy({
 
 
 
-// Very Important to display Images from DRIVE 
+// Very Important to display Images from DRIVE
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "frame-src 'self' https://drive.google.com");
   next();
